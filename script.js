@@ -17,6 +17,9 @@ const gameInfo = document.createElement('div');
 
 let gameStatus = 'playGame';
 
+// display score message
+const scoreMessage = document.createElement('div');
+
 // Helper functions -----------------------------------------------
 // output message
 const output = (message) => {
@@ -117,6 +120,8 @@ const squareClick = (squareClickElement, column, row, boardElement) => {
     // turn this card and first card back over
     flipOverSquares(firstClickedSquare, secondClickedSquare);
   }
+
+  scoreMessage.innerText = `Number of Matches: ${numOfMatches}`;
 };
 
 // make deck
@@ -276,6 +281,8 @@ const gameInit = () => {
   // initialize game info div with starting instructions
   gameInfo.innerText = 'Click on a square to flip over a card!';
   document.body.appendChild(gameInfo);
+
+  document.body.appendChild(scoreMessage);
 };
 
 // start game
