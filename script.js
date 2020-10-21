@@ -32,8 +32,29 @@ const flipOverSquares = (firstSquare, secondSquare) => {
   }, 3000);
 };
 
+// create match message that will disappear after a set time
+const createMatchMessage = (boardElement) => {
+  const matchMessageContainer = document.createElement('div');
+  matchMessageContainer.classList.add('match-message-container');
+  matchMessageContainer.innerText = 'MATCH!';
+
+  boardElement.appendChild(matchMessageContainer);
+
+  canClick = false;
+
+  // match message will disappear after a set time
+  setTimeout(() => {
+    boardElement.removeChild(matchMessageContainer);
+
+    canClick = true;
+
+    // tell player to click on another square
+    output('It is a match! <br> Click on another square to continue!');
+  }, 3000);
+};
+
 // flip cards and check for pairs when a square is clicked
-const squareClick = (squareClickElement, column, row) => {
+const squareClick = (squareClickElement, column, row, boardElement) => {
   console.log(squareClickElement);
   console.log('FIRST CARD', firstCard);
   console.log('CLICKED CARD', board[column][row]);
@@ -56,7 +77,9 @@ const squareClick = (squareClickElement, column, row) => {
     console.log('match');
 
     // let player know that it is a match and to pick another card
-    output('It is a match! <br> Click on another square to continue!');
+    // and clear output meesage
+    output('');
+    createMatchMessage(boardElement);
   } else {
     // empty first card
     firstCard = null;
@@ -194,7 +217,7 @@ const buildBoardElements = (currentBoard) => {
         // "turn the card over"
         // do not allow clicks to work when waiting for squares to flip over.
         if (canClick === true) {
-          squareClick(event.currentTarget, i, j);
+          squareClick(event.currentTarget, i, j, boardElement);
         }
       });
 
