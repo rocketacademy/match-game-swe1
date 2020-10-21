@@ -83,9 +83,12 @@ const boardOfCards = [];
 let firstCard = null;
 const boardSize = 4; // has to be an even number
 const delayInMilliSeconds = 3 * 1000;
+const intervalInMilliSeconds = 1000 * 60 * 3; // 180000
 // Store the cardElement of the first card.
 // Used to turn it over, in case a match is not founded.
 let firstCardElement = null;
+let boardElement = null;
+let gameStarted = false;
 // this variable stores the sliced card deck as per the board size
 let deck;
 // A div element to display information on Game status when necessary
@@ -161,18 +164,22 @@ const squareCardClick = (cardElement, column, row) => {
   }
   else {
     // If the 2 selected cards are not matching, reset the firstCard
-    setGameStatusInfo('Not a match');
+    // setGameStatusInfo('Not a match.');
+    setGameStatusInfo(`Not a match. Please wait for ${(delayInMilliSeconds / 1000)} seconds before pressing another card. `);
     /*
     When the user clicks a square for a second time,
     turn the card over and if it doesn't match the first card,
     show it to the user for 3 seconds then turn it back over.
     */
     displayCardElement(cardElement, currentCard);
+
+    // TO DO: How to control the user from clicking other card squares before finishin the timer
     setTimeout(() => {
       cardElement.innerHTML = '';
       firstCard = null;
       // turn this card back over
       firstCardElement.innerHTML = '';
+      setGameStatusInfo('');
     }, delayInMilliSeconds);
   }
 };
@@ -217,7 +224,20 @@ const buildBoardElements = (board) => {
   return divBoardElement;
 };
 
-const gameInit = () => {
+const resetElements = () => {
+  boardOfCards.length = 0;
+  boardElement.innerHTML = '';
+  divGameStatusInfo.innerHTML = '';
+};
+
+// This function performs all other intializations of the game
+const startGame = () => {
+  console.log('Start Game');
+  if (gameStarted)
+  {
+    resetElements();
+  }
+  gameStarted = true;
   // create this special deck by getting the doubled cards and
   // making a smaller array that is ( boardSize squared ) number of cards
   const doubleDeck = makeDeck();
@@ -231,14 +251,42 @@ const gameInit = () => {
       boardOfCards[i].push(deck.pop());
     }
   }
-
-  const boardEl = buildBoardElements(boardOfCards);
-  document.body.appendChild(boardEl);
+  boardElement = buildBoardElements(boardOfCards);
+  document.body.appendChild(boardElement);
 
   // Add a class to game status
   divGameStatusInfo.classList.add('status');
   // Adding game info container to document.
   document.body.appendChild(divGameStatusInfo);
+};
+
+// Also it sets an interval for the game to end
+let intervalReference = null;
+const onClickStartButton = () => {
+  console.log('onClickStart');
+  startGame();
+  intervalReference = setInterval(startGame, intervalInMilliSeconds);
+};
+
+const onClickStopButton = () => {
+  clearInterval(intervalReference);
+  resetElements();
+};
+
+const gameInit = () => {
+  // Create a button for starting the game.
+  const divStartEl = document.createElement('div');
+  const startButton = document.createElement('button');
+  startButton.innerText = 'Start Game';
+  startButton.addEventListener('click', onClickStartButton);
+  divStartEl.appendChild(startButton);
+
+  const stopButton = document.createElement('button');
+  stopButton.innerText = 'Stop Game';
+  stopButton.addEventListener('click', onClickStopButton);
+  divStartEl.appendChild(stopButton);
+
+  document.body.appendChild(divStartEl);
 };
 
 gameInit();
