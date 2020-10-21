@@ -79,7 +79,7 @@ const makeDeck = () => {
 };
 
 // Used to store all the cards of desired size in a 2D manner
-const boardOfCards = []; 
+const boardOfCards = [];
 let firstCard = null;
 const boardSize = 4; // has to be an even number
 // Store the cardElement of the first card.
@@ -92,146 +92,141 @@ const divGameStatusInfo = document.createElement('div');
 
 // create a helper function for setting the information on game
 const setGameStatusInfo = (message) => {
-    divGameStatusInfo.innerText = message;
-  };
+  divGameStatusInfo.innerText = message;
+};
 
 // Game Play
 
 // Function to display the card details in the respective card element
 const displayCardElement = (cardElement, cardInfo) => {
-    // Creating the element for storing the card display name
-    // 2 Class names are applicable "name, <color>"
-    const divNameElement = document.createElement('div');
-    divNameElement.classList.add('name', cardInfo.color);
-    divNameElement.innerText = cardInfo.display;
-  
-    // Creating the element for storing the suit symbol of the card
-    // Class = "suit"
-    const divSuitElement = document.createElement('div');
-    divSuitElement.classList.add('suit', cardInfo.color);
-    divSuitElement.innerText = cardInfo.suitSymbol;
-  
-    // The parent element that holds both the display name and suit symbol
-    // This element represents a whole single card
-    // Class name = "card"
-    cardElement.innerHTML = '';
-    cardElement.appendChild(divNameElement);
-    cardElement.appendChild(divSuitElement);
-    // Card element is returned from this function
-    return cardElement;
-  };
+  // Creating the element for storing the card display name
+  // 2 Class names are applicable "name, <color>"
+  const divNameElement = document.createElement('div');
+  divNameElement.classList.add('name', cardInfo.color);
+  divNameElement.innerText = cardInfo.display;
 
-  const changeMatchedCardsDisplay = (firstCardEl, secondCardEl) => {
-      firstCardEl.innerHTML = '🎉</br>✨';
-      secondCardEl.innerHTML = '🎉</br>✨';
-  }
+  // Creating the element for storing the suit symbol of the card
+  // Class = "suit"
+  const divSuitElement = document.createElement('div');
+  divSuitElement.classList.add('suit', cardInfo.color);
+  divSuitElement.innerText = cardInfo.suitSymbol;
+
+  // The parent element that holds both the display name and suit symbol
+  // This element represents a whole single card
+  // Class name = "card"
+  cardElement.innerHTML = '';
+  cardElement.appendChild(divNameElement);
+  cardElement.appendChild(divSuitElement);
+  // Card element is returned from this function
+  return cardElement;
+};
+
+const changeMatchedCardsDisplay = (firstCardEl, secondCardEl) => {
+  firstCardEl.innerHTML = '🎉</br>✨';
+  secondCardEl.innerHTML = '🎉</br>✨';
+};
 
 // This function handles the click on each square element corresponding to the
 // card in the board
 // cardElement ==> currently clicked square element for the card
 // row and column => location at which that card is placed in the board
 const squareCardClick = (cardElement, column, row) => {
-    
-    const currentCard = boardOfCards[column][row];
+  const currentCard = boardOfCards[column][row];
 
-    console.log( cardElement );
-    console.log('FIRST CARD', firstCard );
-    console.log( 'CLICKED CARD', currentCard );
+  console.log(cardElement);
+  console.log('FIRST CARD', firstCard);
+  console.log('CLICKED CARD', currentCard);
 
-    // Only 2 cards will be considered for matching.
-    if (firstCard === null) {
-        // First card is chosen to be the first selected of the current round
-      firstCard = currentCard;
-      // turn this card over
-      //cardElement.innnerText = firstCard.name;
-      cardElement = displayCardElement( cardElement, firstCard);
-      firstCardElement = cardElement;
-    } 
-    else if (currentCard.name === firstCard.name
+  // Only 2 cards will be considered for matching.
+  if (firstCard === null) {
+    // First card is chosen to be the first selected of the current round
+    firstCard = currentCard;
+    // turn this card over
+    // cardElement.innnerText = firstCard.name;
+    displayCardElement(cardElement, firstCard);
+    firstCardElement = cardElement;
+  }
+  else if (currentCard.name === firstCard.name
     && currentCard.suit === firstCard.suit) {
-      // turn this card over
-      cardElement = displayCardElement(cardElement, currentCard);
-      console.log('match');
-      setGameStatusInfo('You found a match');
-      changeMatchedCardsDisplay(firstCardElement, cardElement);
-      firstCard = null;
-    } 
-    else {
-        // If the 2 selected cards are not matching, reset the firstCard
-      firstCard = null;
-      // turn this card back over
-      firstCardElement.innerHTML = '';
-      firstCardElement = null;
-      setGameStatusInfo('Not a match');
-    }
-  };
+    // turn this card over
+    displayCardElement(cardElement, currentCard);
+    console.log('match');
+    setGameStatusInfo('You found a match');
+    changeMatchedCardsDisplay(firstCardElement, cardElement);
+    firstCard = null;
+  }
+  else {
+    // If the 2 selected cards are not matching, reset the firstCard
+    firstCard = null;
+    // turn this card back over
+    firstCardElement.innerHTML = '';
+    firstCardElement = null;
+    setGameStatusInfo('Not a match');
+  }
+};
 
-  // Initialization
-  // create all the board elements that will go on the screen
+// Initialization
+// create all the board elements that will go on the screen
 // return the built board
 const buildBoardElements = (board) => {
+  // create the element that everything will go inside of
+  const divBoardElement = document.createElement('div');
+  // give it a class for CSS purposes
+  divBoardElement.classList.add('board');
 
-    // create the element that everything will go inside of
-    const divBoardElement = document.createElement('div');
-    // give it a class for CSS purposes
-    divBoardElement.classList.add('board');
-  
-    // use the board data structure we passed in to create the correct size board
-    for (let indexRow = 0; indexRow < board.length; indexRow += 1) {
-      // make a var for just this row of cards
-      const row = board[indexRow];      
-      // make an element for this row of cards
-      const divRowElement = document.createElement('div');
-      divRowElement.classList.add('row');
-  
-      // make all the squares for this row
-      for (let indexCol = 0; indexCol < row.length; indexCol += 1) {
-        // create the square element - square represents the column in the row
-        const divSquareElement = document.createElement('div');
-        // set a class for CSS purposes
-        divSquareElement.classList.add('square');
-  
-        // set the click event
-        // eslint-disable-next-line
+  // use the board data structure we passed in to create the correct size board
+  for (let indexRow = 0; indexRow < board.length; indexRow += 1) {
+    // make a var for just this row of cards
+    const row = board[indexRow];
+    // make an element for this row of cards
+    const divRowElement = document.createElement('div');
+    divRowElement.classList.add('row');
+
+    // make all the squares for this row
+    for (let indexCol = 0; indexCol < row.length; indexCol += 1) {
+      // create the square element - square represents the column in the row
+      const divSquareElement = document.createElement('div');
+      // set a class for CSS purposes
+      divSquareElement.classList.add('square');
+
+      // set the click event
+      // eslint-disable-next-line
         divSquareElement.addEventListener('click', (event) => {
-          // we will want to pass in the card element so
-          // that we can change how it looks on screen, i.e.,
-          // "turn the card over"
-          squareCardClick(event.currentTarget, indexRow, indexCol);
-        });
-  
-        divRowElement.appendChild( divSquareElement );
-      }
-      divBoardElement.appendChild( divRowElement );
-    }
-    return divBoardElement; 
-  };
-  
-const gameInit = () => {
-  
-    // create this special deck by getting the doubled cards and
-    // making a smaller array that is ( boardSize squared ) number of cards
-    let doubleDeck = makeDeck();
-    let deckSubset = doubleDeck.slice(0,boardSize * boardSize)
-    deck = shuffleCards(deckSubset);
-  
-    // deal the cards out to the board data structure  
-    for( let i=0; i<boardSize; i+=1 ){
-      boardOfCards.push( [] );
-      for( let j=0; j<boardSize; j+=1 ){
-        boardOfCards[i].push( deck.pop() );
-      }
-    }
-    
-    const boardEl = buildBoardElements(boardOfCards);
-    document.body.appendChild( boardEl );
+        // we will want to pass in the card element so
+        // that we can change how it looks on screen, i.e.,
+        // "turn the card over"
+        squareCardClick(event.currentTarget, indexRow, indexCol);
+      });
 
-    
+      divRowElement.appendChild(divSquareElement);
+    }
+    divBoardElement.appendChild(divRowElement);
+  }
+  return divBoardElement;
+};
+
+const gameInit = () => {
+  // create this special deck by getting the doubled cards and
+  // making a smaller array that is ( boardSize squared ) number of cards
+  const doubleDeck = makeDeck();
+  const deckSubset = doubleDeck.slice(0, boardSize * boardSize);
+  deck = shuffleCards(deckSubset);
+
+  // deal the cards out to the board data structure
+  for (let i = 0; i < boardSize; i += 1) {
+    boardOfCards.push([]);
+    for (let j = 0; j < boardSize; j += 1) {
+      boardOfCards[i].push(deck.pop());
+    }
+  }
+
+  const boardEl = buildBoardElements(boardOfCards);
+  document.body.appendChild(boardEl);
+
   // Add a class to game status
   divGameStatusInfo.classList.add('status');
   // Adding game info container to document.
   document.body.appendChild(divGameStatusInfo);
-  };
+};
 
-  gameInit();
-  
+gameInit();
