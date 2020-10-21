@@ -1,5 +1,11 @@
 // Global variables
 const board = [];
+
+// To track position of cards clicked and matched
+const positionArray = [];
+let firstCol;
+let firstRow;
+
 let firstCard = null;
 let secondCard = null;
 
@@ -17,6 +23,12 @@ const boardSize = 4; // has to be an even number
 let numOfClicks = 0;
 let score = 0;
 let deck;
+
+// Track position of card clicked and prevent user from clicking on the same card multiple times to score
+const positionOfCardClicked = {
+  column: '',
+  row: '',
+};
 
 // Main Output Area:
 const outputValue = 'Hi, please input your name :)';
@@ -136,45 +148,69 @@ const squareClick = (cardElement, column, row) => {
   // firstCard is the card object
   // cardElement is HTML
   if (firstCard === null && secondCard === null) {
-    firstCard = board[column][row];
-    // turn this card over
-    // Tracking the firstCard's HTML in firstCardHTML
-    firstCardHtml = cardElement;
-    console.log(cardElement, 'cardElement');
-    console.log(cardElement.getElementsByClassName('displayName'), 'output display name');
-    // firstCardHTML.getElementsByClassName('displayName').innerHTML = `${firstCard.display}`;
-    // firstCardHTML.getElementsByClassName('displaySuit').innerHTML = `${firstCard.symbol}`;
-    firstCardHtml.innerHTML = `<div>${firstCard.display}</div> <div>${firstCard.symbol}<div>`;
+    firstCol = column;
+    firstRow = row;
 
-    outputDivTag.innerHTML = 'Please click another card';
+    if (positionArray[column][row] === 'matched') {
+      outputDivTag.innerHTML = 'Illegal, you cannot choose a matched card';
+    } else {
+      firstCard = board[column][row];
+      positionArray[column][row] = 'x';
+      console.log(positionArray);
+      // turn this card over
+      // Tracking the firstCard's HTML in firstCardHTML
+      firstCardHtml = cardElement;
+      console.log(cardElement, 'cardElement');
+      console.log(cardElement.getElementsByClassName('displayName'), 'output display name');
+      outputCardDisplay(firstCardHtml, firstCard);
+
+      outputDivTag.innerHTML = 'Please click another card';
+    }
   } else if (board[column][row].name === firstCard.name
   && board[column][row].suit === firstCard.suit) {
+    // First check if user is not clicking on the same card again
+    if (positionArray[column][row] !== 'x') {
     // turn this card over
-    // Tell user it is a match
-    cardElement.innerHTML = `${firstCard.display} <br> ${firstCard.symbol}`;
-    outputDivTag.innerHTML = 'Its a match!';
-    // Increment score by 1 and output it into the scoreOutputDivTag
-    score += 1;
-    scoreOutputDivTag.innerHTML = displayScore();
-
-    // if in this click, player achieves max score ie completes game, show congrats msg
+      cardElement.innerHTML = `${firstCard.display} <br> ${firstCard.symbol}`;
+      outputDivTag.innerHTML = 'Its a match!';
+      // Increment score by 1 and output it into the scoreOutputDivTag
+      score += 1;
+      // rename position x to matched
+      positionArray[column][row] = 'matched';
+      positionArray[firstCol][firstRow] = 'matched';
+      firstCol = '';
+      firstRow = '';
+      scoreOutputDivTag.innerHTML = displayScore();
+    } else if (positionArray[column][row] !== '') {
+      if (positionArray[column][row] === 'x') {
+        outputDivTag.innerHTML = 'Illegal. You cannot choose the same card.';
+        positionArray[firstCol][firstRow] = '';
+        console.log(positionArray);
+      } else if (positionArray[column][row] === 'matched') {
+        outputDivTag.innerHTML = 'Illegal. You cannot choose a matched card.';
+      }
+      setTimeout(() => {
+        clearCardDisplay(firstCardHtml);
+        clearCardDisplay(secondCardHtml);
+      }, 500);
+    }
+    // Next check if in this click, player achieves max score ie completes game, show congrats msg
     if (score === (boardSize * boardSize) / 2) {
       congratulations(timeLeft);
     }
     setTimeout(() => { outputDivTag.innerHTML = ''; }, 3000);
     firstCard = null;
-
-  // } else if (firstCard !== null && secondCard !== null) {
-  //   firstCard = null;
-  //   secondCard = null;
-  //   firstCardHTML.innerHTML = '';
-  //   secondCardHTML.innerHTML = '';
-  //   console.log('attempting to clear');
+    // else if you clicked on 1st card and not yet 2nd card
   } else if (firstCard !== null && secondCard === null) {
     // turn this card back over
     secondCard = board[column][row];
     secondCardHtml = cardElement;
-    secondCardHtml.innerHTML = `${secondCard.display} <br> ${secondCard.symbol}`;
+    outputCardDisplay(secondCardHtml, secondCard);
+
+    // check if second card is matched -
+    if (positionArray[column][row] !== 'matched') {
+      positionArray[firstCol][firstRow] = '';
+    }
 
     console.log(firstCard, 'firstCard');
     console.log(secondCard, 'secondCard');
@@ -182,16 +218,21 @@ const squareClick = (cardElement, column, row) => {
     ref2 = setTimeout(() => {
       firstCard = null;
       secondCard = null;
-      secondCardHtml.innerHTML = '';
-      firstCardHtml.innerHTML = ''; }, 1000);
+      clearCardDisplay(firstCardHtml);
+      clearCardDisplay(secondCardHtml);
+    }, 1000);
 
     outputDivTag.innerHTML = 'There is no-match. The first card is returned to null';
+
+    // else if you clicked on 1st card and 2nd card (and now 3rd card)
   } else if (firstCard !== null && secondCard !== null) {
     clearInterval(ref2);
     firstCard = null;
     secondCard = null;
-    firstCardHtml.innerHTML = '';
-    secondCardHtml.innerHTML = '';
+    positionArray[firstCol][firstRow] = '';
+    console.log(positionArray);
+    clearCardDisplay(firstCardHtml);
+    clearCardDisplay(secondCardHtml);
     // Calling squareclick() again recursively: clear 1st 2 cards and  simulate running the fn from the start by calling this fn again
     squareClick(cardElement, column, row);
   }
@@ -316,8 +357,10 @@ const gameInit = () => {
   // deal the cards out to the board data structure
   for (let i = 0; i < boardSize; i += 1) {
     board.push([]);
+    positionArray.push([]);
     for (let j = 0; j < boardSize; j += 1) {
       board[i].push(deck.pop());
+      positionArray[i].push('');
     }
   }
 
@@ -359,6 +402,29 @@ const congratulations = (timeLeft) => {
     congratsDisplay.innerHTML = '';
   }, 5000);
   document.body.appendChild(congratsDisplay);
+};
+
+// Fn to outputCardDisplay by each nested div inside square divs
+const outputCardDisplay = (cardHtml, card) => {
+  for (let i = 0; i < cardHtml.childNodes.length; i += 1) {
+    const currNode = cardHtml.childNodes[i];
+    if (currNode.className === 'displayName') {
+      currNode.innerHTML = card.display;
+    } else {
+      currNode.innerHTML = card.symbol;
+    }
+  }
+};
+// Fn to clear text by each nested div inside square divs
+const clearCardDisplay = (cardHtml) => {
+  for (let i = 0; i < cardHtml.childNodes.length; i += 1) {
+    const currNode = cardHtml.childNodes[i];
+    if (currNode.className === 'displayName') {
+      currNode.innerHTML = '';
+    } else {
+      currNode.innerHTML = '';
+    }
+  }
 };
 
 // Run the program
