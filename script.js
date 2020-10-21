@@ -154,6 +154,10 @@ const squareCardClick = (cardElement, column, row) => {
     setGameStatusInfo('You found a match');
     changeMatchedCardsDisplay(firstCardElement, cardElement);
     firstCard = null;
+    // When the user matches a card, show a match message for 3 seconds, then make it disappear.
+    setTimeout(() => {
+      setGameStatusInfo('');
+    }, delayInMilliSeconds);
   }
   else {
     // If the 2 selected cards are not matching, reset the firstCard
