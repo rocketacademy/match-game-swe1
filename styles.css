@@ -1,3 +1,31 @@
-body {
+body{
   background-color:pink;
+}
+.square{
+  padding:10px;
+  margin:10px;
+  background-color:white;
+  display:inline-block;
+  height:10px;
+  width:10px;
+}body{
+  background-color:pink;
+}
+.square{
+  padding:10px;
+  margin:10px;
+  background-color:white;
+  display:inline-block;
+  height:10px;
+  width:10px;
+}
+.outputBox{ 
+  display: inline-block;
+  width:200px;
+  height:80px;
+  padding: 5px;
+  background-color: white;
+  border: solid black;
+  border-width: 5px;
+
 }
