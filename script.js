@@ -9,6 +9,9 @@ let numOfMatches = 0;
 let firstClickedSquare;
 let secondClickedSquare;
 
+// to store position of first square clicked
+const positionOfFirstSquareClicked = [];
+
 let canClick = true;
 
 let deck;
@@ -69,13 +72,20 @@ const squareClick = (squareClickElement, column, row, boardElement) => {
   if (firstCard === null) {
     firstCard = board[column][row];
     firstClickedSquare = squareClickElement;
+    positionOfFirstSquareClicked.push(column);
+    positionOfFirstSquareClicked.push(row);
 
     // turn this card over
     firstClickedSquare.innerText = `${firstCard.display},${firstCard.suitSymbol}`;
 
     // let player know to click another card
     output('Click on another square to flip over the 2nd card!');
-  } else if (board[column][row].name === firstCard.name
+  } else if (column === positionOfFirstSquareClicked[0]
+    && row === positionOfFirstSquareClicked[1]) {
+    console.log('clicked on same card');
+    // do nothing if player clicked on same card
+  }
+  else if (board[column][row].name === firstCard.name
   && board[column][row].suit === firstCard.suit) {
     secondClickedSquare = squareClickElement;
 
