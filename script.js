@@ -13,6 +13,8 @@ let deck;
 
 const gameInfo = document.createElement('div');
 
+let gameStatus = 'playGame';
+
 // Helper functions -----------------------------------------------
 // output message
 const output = (message) => {
@@ -216,7 +218,7 @@ const buildBoardElements = (currentBoard) => {
         // that we can change how it looks on screen, i.e.,
         // "turn the card over"
         // do not allow clicks to work when waiting for squares to flip over.
-        if (canClick === true) {
+        if (canClick === true && gameStatus === 'playGame') {
           squareClick(event.currentTarget, i, j, boardElement);
         }
       });
@@ -258,3 +260,9 @@ const gameInit = () => {
 
 // start game
 gameInit();
+
+// setTimer till game ends
+setTimeout(() => {
+  gameStatus = 'stopGame';
+  output('Sorry time is up! Please refresh the page to play again.');
+}, 180000);
