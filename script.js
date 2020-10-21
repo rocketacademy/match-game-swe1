@@ -82,6 +82,7 @@ const makeDeck = () => {
 const boardOfCards = [];
 let firstCard = null;
 const boardSize = 4; // has to be an even number
+const delayInMilliSeconds = 3 * 1000;
 // Store the cardElement of the first card.
 // Used to turn it over, in case a match is not founded.
 let firstCardElement = null;
@@ -142,7 +143,6 @@ const squareCardClick = (cardElement, column, row) => {
     // First card is chosen to be the first selected of the current round
     firstCard = currentCard;
     // turn this card over
-    // cardElement.innnerText = firstCard.name;
     displayCardElement(cardElement, firstCard);
     firstCardElement = cardElement;
   }
@@ -157,11 +157,19 @@ const squareCardClick = (cardElement, column, row) => {
   }
   else {
     // If the 2 selected cards are not matching, reset the firstCard
-    firstCard = null;
-    // turn this card back over
-    firstCardElement.innerHTML = '';
-    firstCardElement = null;
     setGameStatusInfo('Not a match');
+    /*
+    When the user clicks a square for a second time,
+    turn the card over and if it doesn't match the first card,
+    show it to the user for 3 seconds then turn it back over.
+    */
+    displayCardElement(cardElement, currentCard);
+    setTimeout(() => {
+      cardElement.innerHTML = '';
+      firstCard = null;
+      // turn this card back over
+      firstCardElement.innerHTML = '';
+    }, delayInMilliSeconds);
   }
 };
 
