@@ -3,6 +3,10 @@ const board = [];
 let firstCard = null;
 const boardSize = 4; // has to be an even number
 
+// to store squareClickElement
+let firstClickedSquare;
+let secondClickedSquare;
+
 let deck;
 
 const gameInfo = document.createElement('div');
@@ -13,34 +17,54 @@ const output = (message) => {
   gameInfo.innerHTML = message;
 };
 
+// flip over cards that were clicked this round if they do not match
+const flipOverSquares = (firstSquare, secondSquare) => {
+  setTimeout(() => {
+    console.log('turn both cards back over');
+    firstSquare.innerText = '';
+    secondSquare.innerText = '';
+  }, 3000);
+};
+
 // flip cards and check for pairs when a square is clicked
-const squareClick = (cardElement, column, row) => {
-  console.log(cardElement);
+const squareClick = (squareClickElement, column, row) => {
+  console.log(squareClickElement);
   console.log('FIRST CARD', firstCard);
   console.log('CLICKED CARD', board[column][row]);
 
   if (firstCard === null) {
     firstCard = board[column][row];
+    firstClickedSquare = squareClickElement;
+
     // turn this card over
-    cardElement.innerText = `${firstCard.display},${firstCard.suitSymbol}`;
+    firstClickedSquare.innerText = `${firstCard.display},${firstCard.suitSymbol}`;
 
     // let player know to click another card
     output('Click on another square to flip over the 2nd card!');
   } else if (board[column][row].name === firstCard.name
   && board[column][row].suit === firstCard.suit) {
+    secondClickedSquare = squareClickElement;
+
     // turn this card over
-    cardElement.innerText = `${board[column][row].display},${board[column][row].suitSymbol}`;
+    secondClickedSquare.innerText = `${board[column][row].display},${board[column][row].suitSymbol}`;
     console.log('match');
 
     // let player know that it is a match and to pick another card
     output('It is a match! <br> Click on another square to continue!');
   } else {
-    cardElement.innerText = `${board[column][row].display},${board[column][row].suitSymbol}`;
+    // empty first card
     firstCard = null;
+
+    secondClickedSquare = squareClickElement;
+
+    // turn this card over
+    secondClickedSquare.innerText = `${board[column][row].display},${board[column][row].suitSymbol}`;
 
     // let player know that it is not a match and to pick another card
     output('Oops your cards did not match! <br> Click on another square to try again!');
-    // turn this card back over
+
+    // turn this card and first card back over
+    flipOverSquares(firstClickedSquare, secondClickedSquare);
   }
 };
 
