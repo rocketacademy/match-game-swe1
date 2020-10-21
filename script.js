@@ -2,6 +2,8 @@
 const board = [];
 let firstCard = null;
 const boardSize = 4; // has to be an even number
+const matchesNeededToWin = (boardSize * boardSize) / 2;
+let numOfMatches = 0;
 
 // to store the square elements that the player clicked on this round
 let firstClickedSquare;
@@ -77,6 +79,24 @@ const squareClick = (squareClickElement, column, row, boardElement) => {
     // turn this card over
     secondClickedSquare.innerText = `${board[column][row].display},${board[column][row].suitSymbol}`;
     console.log('match');
+
+    // increment number of matches by 1
+    numOfMatches += 1;
+
+    // display winning message and end game if player matches everything
+    if (numOfMatches === matchesNeededToWin) {
+      gameStatus = 'stopGame';
+
+      const specialMessage = document.createElement('img');
+      specialMessage.classList.add('special-message');
+      specialMessage.src = 'https://www.birthdaywishes.expert/wp-content/uploads/2018/06/Success.jpg';
+      document.body.appendChild(specialMessage);
+
+      setTimeout(() => {
+        document.body.removeChild(specialMessage);
+        output('Congratulations you have matched all cards! Please refresh to play again');
+      }, 5000);
+    }
 
     // let player know that it is a match and to pick another card
     // and clear output meesage
