@@ -135,7 +135,7 @@ const squareClick = (squareClickElement, column, row, boardElement) => {
 };
 
 // make deck
-const makeDeck = (cardAmount) => {
+const makeDeck = () => {
   // create the empty deck at the beginning
   const newDeck = [];
   const suits = ['hearts', 'diamonds', 'clubs', 'spades'];
