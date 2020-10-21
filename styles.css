@@ -10,6 +10,7 @@ body{
   width:30px;
   color: black;
   text-align: center;
+  vertical-align: top;
 }
 .match-message-container{
   padding: auto 5px;
