@@ -4,8 +4,8 @@ let firstCard = null;
 let secondCard = null;
 
 // track the first card and second card's HTML equivalent
-let firstCardHTML;
-let secondCardHTML;
+let firstCardHtml;
+let secondCardHtml;
 const countDownTime = 180; // 180s
 
 let ref = ''; // define & capture reference to timer event;
@@ -139,12 +139,12 @@ const squareClick = (cardElement, column, row) => {
     firstCard = board[column][row];
     // turn this card over
     // Tracking the firstCard's HTML in firstCardHTML
-    firstCardHTML = cardElement;
+    firstCardHtml = cardElement;
     console.log(cardElement, 'cardElement');
     console.log(cardElement.getElementsByClassName('displayName'), 'output display name');
     // firstCardHTML.getElementsByClassName('displayName').innerHTML = `${firstCard.display}`;
     // firstCardHTML.getElementsByClassName('displaySuit').innerHTML = `${firstCard.symbol}`;
-    firstCardHTML.innerHTML = `<div>${firstCard.display}</div> <div>${firstCard.symbol}<div>`;
+    firstCardHtml.innerHTML = `<div>${firstCard.display}</div> <div>${firstCard.symbol}<div>`;
 
     outputDivTag.innerHTML = 'Please click another card';
   } else if (board[column][row].name === firstCard.name
@@ -173,8 +173,8 @@ const squareClick = (cardElement, column, row) => {
   } else if (firstCard !== null && secondCard === null) {
     // turn this card back over
     secondCard = board[column][row];
-    secondCardHTML = cardElement;
-    secondCardHTML.innerHTML = `${secondCard.display} <br> ${secondCard.symbol}`;
+    secondCardHtml = cardElement;
+    secondCardHtml.innerHTML = `${secondCard.display} <br> ${secondCard.symbol}`;
 
     console.log(firstCard, 'firstCard');
     console.log(secondCard, 'secondCard');
@@ -182,16 +182,16 @@ const squareClick = (cardElement, column, row) => {
     ref2 = setTimeout(() => {
       firstCard = null;
       secondCard = null;
-      secondCardHTML.innerHTML = '';
-      firstCardHTML.innerHTML = ''; }, 1000);
+      secondCardHtml.innerHTML = '';
+      firstCardHtml.innerHTML = ''; }, 1000);
 
     outputDivTag.innerHTML = 'There is no-match. The first card is returned to null';
   } else if (firstCard !== null && secondCard !== null) {
     clearInterval(ref2);
     firstCard = null;
     secondCard = null;
-    firstCardHTML.innerHTML = '';
-    secondCardHTML.innerHTML = '';
+    firstCardHtml.innerHTML = '';
+    secondCardHtml.innerHTML = '';
     // Calling squareclick() again recursively: clear 1st 2 cards and  simulate running the fn from the start by calling this fn again
     squareClick(cardElement, column, row);
   }
@@ -345,10 +345,6 @@ const resetGame = () => {
     document.body.innerHTML = '';
     gameInit();
     resetGame();
-    gameStarted = false;
-    // if (gameStarted === true) {
-    //   gameTimer(countDownTime);
-    // }
   });
 
   document.body.appendChild(resetButton);
@@ -364,20 +360,6 @@ const congratulations = (timeLeft) => {
   }, 5000);
   document.body.appendChild(congratsDisplay);
 };
-
-// const promise = new Promise((resolve) => {
-//   gameInit();
-
-// });
-
-// const resolveFirstClickEvent(){
-//   return
-// }
-
-// const awaitFirstClick () => {
-//   console.log('waiting for first click');
-//   const result = await promiseFromClickEvent();
-// }
 
 // Run the program
 
