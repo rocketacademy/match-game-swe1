@@ -3,9 +3,11 @@ const board = [];
 let firstCard = null;
 const boardSize = 4; // has to be an even number
 
-// to store squareClickElement
+// to store the square elements that the player clicked on this round
 let firstClickedSquare;
 let secondClickedSquare;
+
+let canClick = true;
 
 let deck;
 
@@ -19,10 +21,14 @@ const output = (message) => {
 
 // flip over cards that were clicked this round if they do not match
 const flipOverSquares = (firstSquare, secondSquare) => {
+  canClick = false;
   setTimeout(() => {
     console.log('turn both cards back over');
     firstSquare.innerText = '';
     secondSquare.innerText = '';
+
+    // allow player to click on squares again
+    canClick = true;
   }, 3000);
 };
 
@@ -186,7 +192,10 @@ const buildBoardElements = (currentBoard) => {
         // we will want to pass in the card element so
         // that we can change how it looks on screen, i.e.,
         // "turn the card over"
-        squareClick(event.currentTarget, i, j);
+        // do not allow clicks to work when waiting for squares to flip over.
+        if (canClick === true) {
+          squareClick(event.currentTarget, i, j);
+        }
       });
 
       rowElement.appendChild(square);
