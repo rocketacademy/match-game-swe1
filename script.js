@@ -84,9 +84,16 @@ let firstCard = null;
 const boardSize = 4; // has to be an even number
 // Store the cardElement of the first card.
 // Used to turn it over, in case a match is not founded.
-let firstCardElelemt = null;
+let firstCardElement = null;
 // this variable stores the sliced card deck as per the board size
 let deck;
+// A div element to display information on Game status when necessary
+const divGameStatusInfo = document.createElement('div');
+
+// create a helper function for setting the information on game
+const setGameStatusInfo = (message) => {
+    divGameStatusInfo.innerText = message;
+  };
 
 // Game Play
 
@@ -107,13 +114,17 @@ const displayCardElement = (cardElement, cardInfo) => {
     // The parent element that holds both the display name and suit symbol
     // This element represents a whole single card
     // Class name = "card"
-
+    cardElement.innerHTML = '';
     cardElement.appendChild(divNameElement);
     cardElement.appendChild(divSuitElement);
     // Card element is returned from this function
     return cardElement;
   };
 
+  const changeMatchedCardsDisplay = (firstCardEl, secondCardEl) => {
+      firstCardEl.innerHTML = '🎉</br>✨';
+      secondCardEl.innerHTML = '🎉</br>✨';
+  }
 
 // This function handles the click on each square element corresponding to the
 // card in the board
@@ -134,20 +145,24 @@ const squareCardClick = (cardElement, column, row) => {
       // turn this card over
       //cardElement.innnerText = firstCard.name;
       cardElement = displayCardElement( cardElement, firstCard);
-      firstCardElelemt = cardElement;
+      firstCardElement = cardElement;
     } 
     else if (currentCard.name === firstCard.name
     && currentCard.suit === firstCard.suit) {
       // turn this card over
       cardElement = displayCardElement(cardElement, currentCard);
       console.log('match');
+      setGameStatusInfo('You found a match');
+      changeMatchedCardsDisplay(firstCardElement, cardElement);
+      firstCard = null;
     } 
     else {
         // If the 2 selected cards are not matching, reset the firstCard
       firstCard = null;
       // turn this card back over
-      firstCardElelemt.innerHTML = '';
-      firstCardElelemt = null;
+      firstCardElement.innerHTML = '';
+      firstCardElement = null;
+      setGameStatusInfo('Not a match');
     }
   };
 
@@ -192,7 +207,7 @@ const buildBoardElements = (board) => {
     return divBoardElement; 
   };
   
-  const gameInit = () => {
+const gameInit = () => {
   
     // create this special deck by getting the doubled cards and
     // making a smaller array that is ( boardSize squared ) number of cards
@@ -209,8 +224,13 @@ const buildBoardElements = (board) => {
     }
     
     const boardEl = buildBoardElements(boardOfCards);
-    
     document.body.appendChild( boardEl );
+
+    
+  // Add a class to game status
+  divGameStatusInfo.classList.add('status');
+  // Adding game info container to document.
+  document.body.appendChild(divGameStatusInfo);
   };
 
   gameInit();
