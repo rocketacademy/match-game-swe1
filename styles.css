@@ -1,3 +1,33 @@
-body {
+body{
   background-color:pink;
+}
+.square{
+  padding:5px;
+  margin:10px;
+  background-color:white;
+  display:inline-block;
+  height:30px;
+  width:30px;
+  color: black;
+  text-align: center;
+  vertical-align: top;
+}
+.match-message-container{
+  padding: auto 5px;
+  margin:10px;
+  background-color:white;
+  width: 100px;
+  height: 50px;
+  border-radius: 5px;
+  border-style: dashed;
+  border-color: greenyellow;
+  text-align: center;
+  line-height: 50px;
+}
+.special-message{
+  width: 400px;
+  height: 400px;
+  position: absolute;
+  top: 100px;
+  left: 0px;
 }
