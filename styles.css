@@ -1,3 +1,38 @@
 body {
   background-color:pink;
 }
+/* .square{
+  padding:10px;
+  margin:10px;
+  background-color:white;
+  display:inline-block;
+  height:10px;
+  width:10px;
+  vertical-align: top;
+} */
+
+.square{
+  padding:10px;
+  margin:10px;
+  background-color:white;
+  vertical-align: top;
+  height: 70px;
+  width:50px;
+  text-align:center;
+  border-radius:8px;
+  display:inline-block;
+}
+
+.suit{
+  margin: 5px;
+  font-size:20px;
+}
+.name{
+  margin: 5px;
+  font-size:24px;
+  font-weight:bold;
+  font-family:sans-serif;
+}
+.red{
+  color:red;
+}
