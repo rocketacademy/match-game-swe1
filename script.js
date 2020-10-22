@@ -167,15 +167,17 @@ const squareClick = (cardElement, column, row) => {
       //   clearCardDisplay(firstCardHtml);
       // }
       firstCardHtml = cardElement;
-      // console.log(cardElement, 'cardElement');
-      // console.log(cardElement.getElementsByClassName('displayName'), 'output display name');
+
       outputCardDisplay(firstCardHtml, firstCard);
 
       outputDivTag.innerHTML = 'Please click another card';
     }
     // In the event there is a match:
-  } else if (board[column][row].name === firstCard.name
+  }
+  // after firstCard is revealed, check if secondCard is the same as firstCard
+  else if (board[column][row].name === firstCard.name
   && board[column][row].suit === firstCard.suit) {
+    console.log('test2');
     if (positionArray[column][row] === 'x') {
       outputDivTag.innerHTML = 'Illegal. You cannot choose the same card.';
       positionArray[firstCol][firstRow] = '';
@@ -224,7 +226,10 @@ const squareClick = (cardElement, column, row) => {
     firstCard = null;
     secondCard = null;
     // In the event there is no match between the 1st 2 cards
-  } else if (firstCard !== null && secondCard === null) {
+  }
+  // after firstCard is revealed, and secondCard is NOT the same as firstCard
+  else if (firstCard !== null && secondCard === null) {
+    console.log('test3');
     // turn this card back over
     secondCard = board[column][row];
     secondCardHtml = cardElement;
@@ -237,7 +242,7 @@ const squareClick = (cardElement, column, row) => {
       secondCard = null;
       ref2 = setTimeout(() => {
         clearCardDisplay(firstCardHtml);
-        clearCardDisplay(secondCardHtml);
+        // clearCardDisplay(secondCardHtml);
         console.log('clear card 1');
       }, 500);
       // else if first card is x and second card is empty and no match:
@@ -256,7 +261,9 @@ const squareClick = (cardElement, column, row) => {
     outputDivTag.innerHTML = 'There is no-match. The first card is returned to null';
 
     // else if you clicked on 1st card and 2nd card (and now 3rd card)
-  } else if (firstCard !== null && secondCard !== null) {
+  }
+  // after firstCard and secondCard are both revealed and I click on a thirdCard
+  else if (firstCard !== null && secondCard !== null) {
     // Immediately stop the first 2 references and restore to the first if-statement of a player drawing a new card
     console.log('testestest');
     clearInterval(ref2);
