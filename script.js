@@ -22,13 +22,16 @@ let canClick = false;
 
 const gameInfo = document.createElement('div');
 
-// display score message
+// container to display score message
 const scoreMessage = document.createElement('div');
 
 const playerNameInput = document.createElement('input');
 const playerNameButton = document.createElement('button');
 // Container for player name input and button
 const playerNameInputContainer = document.createElement('div');
+
+// container to display match's countdown timer
+const matchCountdownTimer = document.createElement('div');
 
 // Helper functions -----------------------------------------------
 // output message
@@ -123,6 +126,9 @@ const squareClick = (squareClickElement, column, row, boardElement) => {
     // and clear output meesage
     output('');
     createMatchMessage(boardElement);
+
+    // empty first card
+    firstCard = null;
   } else {
     // empty first card
     firstCard = null;
@@ -306,7 +312,8 @@ const gameInit = () => {
 
   playerNameButton.addEventListener('click', () => {
     playerName = playerNameInput.value;
-    output(`Welcome ${playerName}. You may now start playing by clicking on a square to flip over a card!`);
+    output(`Welcome ${playerName}. You may now start playing by clicking on a square to flip over a card! 
+    You have 3 minutes to complete the game or you lose!`);
     canClick = true;
 
     // remove playerNameInputContainer display
