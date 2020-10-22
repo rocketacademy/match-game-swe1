@@ -65,6 +65,7 @@ const makeDeck = () => {
         suitSymbol: currentSuitSymbol,
         rank: rankCounter,
         color: currentCardColor,
+        matched: false,
       };
 
       // console.log(`rank: ${rankCounter}`);
@@ -91,8 +92,22 @@ let boardElement = null;
 let gameStarted = false;
 // this variable stores the sliced card deck as per the board size
 let deck;
+// To store the reference to interval function to start the game
+let intervalReference = null;
+// To store the name
+let playerName = '';
+// // Score variable
+// const gameTotalScore = 0;
+// const gameAttempts = 0;
+
 // A div element to display information on Game status when necessary
 const divGameStatusInfo = document.createElement('div');
+// Input element for entering the player name
+const inputPlayerName = document.createElement('input');
+// Button to submit the name
+const inputNameSubmitButton = document.createElement('button');
+// Refresh button
+const resetButton = document.createElement('button');
 
 // create a helper function for setting the information on game
 const setGameStatusInfo = (message) => {
@@ -126,20 +141,43 @@ const displayCardElement = (cardElement, cardInfo) => {
 };
 
 const changeMatchedCardsDisplay = (firstCardEl, secondCardEl) => {
-  firstCardEl.innerHTML = '🎉</br>✨';
-  secondCardEl.innerHTML = '🎉</br>✨';
+  firstCardEl.innerHTML = '🎉</br>✨<br/>🎊';
+  secondCardEl.innerHTML = '🎉</br>✨<br/>🎊';
 };
 
+// This function marks the 2 cards as matched cards,
+// so that no further click is allowed at the same cards again
+const setMatchedCards = (secondCard) => {
+  firstCard.matched = true;
+  secondCard.matched = true;
+};
+
+let canClick = true;
 // This function handles the click on each square element corresponding to the
 // card in the board
 // cardElement ==> currently clicked square element for the card
 // row and column => location at which that card is placed in the board
 const squareCardClick = (cardElement, column, row) => {
+  setGameStatusInfo('');
+  if (canClick === false)
+  {
+    return;
+  }
   const currentCard = boardOfCards[column][row];
+  if (currentCard.matched)
+  {
+    setGameStatusInfo('Please select another card. This card is already matched.');
+    return;
+  }
 
   console.log(cardElement);
   console.log('FIRST CARD', firstCard);
   console.log('CLICKED CARD', currentCard);
+  // both first and second cards are selected
+  if (firstCard !== null)
+  {
+    canClick = false;
+  }
 
   // Only 2 cards will be considered for matching.
   if (firstCard === null) {
@@ -154,11 +192,13 @@ const squareCardClick = (cardElement, column, row) => {
     // turn this card over
     displayCardElement(cardElement, currentCard);
     console.log('match');
-    setGameStatusInfo('You found a match');
+    setGameStatusInfo('You found a match. Please continue game after this message disappears');
     changeMatchedCardsDisplay(firstCardElement, cardElement);
+    setMatchedCards(currentCard);
     firstCard = null;
     // When the user matches a card, show a match message for 3 seconds, then make it disappear.
     setTimeout(() => {
+      canClick = true;
       setGameStatusInfo('');
     }, delayInMilliSeconds);
   }
@@ -173,12 +213,12 @@ const squareCardClick = (cardElement, column, row) => {
     */
     displayCardElement(cardElement, currentCard);
 
-    // TO DO: How to control the user from clicking other card squares before finishin the timer
     setTimeout(() => {
       cardElement.innerHTML = '';
       firstCard = null;
       // turn this card back over
       firstCardElement.innerHTML = '';
+      canClick = true;
       setGameStatusInfo('');
     }, delayInMilliSeconds);
   }
@@ -225,8 +265,12 @@ const buildBoardElements = (board) => {
 };
 
 const resetElements = () => {
+  console.log('resetElements');
   boardOfCards.length = 0;
-  boardElement.innerHTML = '';
+  if (boardElement !== null)
+  {
+    boardElement.innerHTML = '';
+  }
   divGameStatusInfo.innerHTML = '';
 };
 
@@ -253,40 +297,72 @@ const startGame = () => {
   }
   boardElement = buildBoardElements(boardOfCards);
   document.body.appendChild(boardElement);
-
-  // Add a class to game status
-  divGameStatusInfo.classList.add('status');
-  // Adding game info container to document.
-  document.body.appendChild(divGameStatusInfo);
 };
 
-// Also it sets an interval for the game to end
-let intervalReference = null;
+// Function that starts the game. Here it resets the board of cards
+// Also it sets an interval to restart the game after a specific amount of time
 const onClickStartButton = () => {
   console.log('onClickStart');
   startGame();
   intervalReference = setInterval(startGame, intervalInMilliSeconds);
 };
 
+// Function to stop the resetting of the game after an interval
 const onClickStopButton = () => {
   clearInterval(intervalReference);
   resetElements();
 };
 
+// Function to display the player Name
+const displayPlayerName = () => {
+  playerName = inputPlayerName.value;
+  setGameStatusInfo(`Hey ${playerName}, You can start playing.`);
+};
+
 const gameInit = () => {
+  // Section to handle the inputs received from user any
+  const divInputNameElements = document.createElement('div');
+  //   divInputNameElements.classList.add('common-margin');
+  inputPlayerName.setAttribute('type', 'text');
+  inputPlayerName.setAttribute('placeholder', 'Enter your name for play');
+  inputPlayerName.classList.add('common-margin');
+  divInputNameElements.appendChild(inputPlayerName);
+
+  inputNameSubmitButton.innerText = 'Submit Name';
+  inputNameSubmitButton.classList.add('common-margin');
+  inputNameSubmitButton.addEventListener('click', displayPlayerName);
+  divInputNameElements.appendChild(inputNameSubmitButton);
+
+  // Section that holds the reset button
+  const divResetEl = document.createElement('div');
+  divResetEl.classList.add('common-margin');
+  resetButton.innerText = 'Reset Game';
+  resetButton.addEventListener('click', resetElements);
+  divResetEl.appendChild(resetButton);
+
   // Create a button for starting the game.
   const divStartEl = document.createElement('div');
+  // divStartEl.classList.add('common-margin');
   const startButton = document.createElement('button');
   startButton.innerText = 'Start Game';
+  startButton.classList.add('common-margin');
   startButton.addEventListener('click', onClickStartButton);
   divStartEl.appendChild(startButton);
 
   const stopButton = document.createElement('button');
   stopButton.innerText = 'Stop Game';
+  stopButton.classList.add('common-margin');
   stopButton.addEventListener('click', onClickStopButton);
   divStartEl.appendChild(stopButton);
 
+  document.body.appendChild(divInputNameElements);
+  document.body.appendChild(divResetEl);
   document.body.appendChild(divStartEl);
+
+  // Add a class to game status
+  divGameStatusInfo.classList.add('status');
+  // Adding game info container to document.
+  document.body.appendChild(divGameStatusInfo);
 };
 
 gameInit();

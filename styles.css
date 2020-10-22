@@ -43,5 +43,9 @@ body {
   font-weight: bold;
   font-style: italic;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
 
+.common-margin{
+  margin-bottom: 20px;
+  margin-right: 10px;
 }
