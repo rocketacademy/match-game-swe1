@@ -84,7 +84,8 @@ const boardOfCards = [];
 let firstCard = null;
 const boardSize = 4; // has to be an even number
 const delayInMilliSeconds = 3 * 1000;
-const intervalInMilliSeconds = 1000 * 60 * 3; // 180000
+const delayForSpecialMessage = 5 * 1000;
+const intervalInMilliSeconds = 1000 * 60 * 3; // 180000 = 3 minutes
 // Store the cardElement of the first card.
 // Used to turn it over, in case a match is not founded.
 let firstCardElement = null;
@@ -173,9 +174,10 @@ const squareCardClick = (cardElement, column, row) => {
     return;
   }
 
-  console.log(cardElement);
-  console.log('FIRST CARD', firstCard);
-  console.log('CLICKED CARD', currentCard);
+  // console.log(cardElement);
+  // console.log('FIRST CARD', firstCard);
+  // console.log('CLICKED CARD', currentCard);
+
   // both first and second cards are selected
   if (firstCard !== null)
   {
@@ -196,20 +198,35 @@ const squareCardClick = (cardElement, column, row) => {
     // turn this card over
     displayCardElement(cardElement, currentCard);
 
-    // when a match is found, score is increased
-    gameTotalScore += 1;
-    setGameStatusInfo(`You found a match. Current Score: ${gameTotalScore}.
-    Please continue game after this message disappears`);
-
     changeMatchedCardsDisplay(firstCardElement, cardElement);
     setMatchedCards(currentCard);
     firstCard = null;
 
-    // When the user matches a card, show a match message for 3 seconds, then make it disappear.
+    // when a match is found, score is increased
+    gameTotalScore += 1;
+    // When the user matches a card, show a message for the specific time, then make it disappear.
+    console.log(`Game Score: ${gameTotalScore}`);
+    let delayTime = delayInMilliSeconds;
+    if (gameTotalScore === ((boardSize * boardSize) / 2))
+    {
+      console.log('Maximum score got');
+      // When the user matches all the cards, show a special message on screen for 5 seconds.
+      setGameStatusInfo(`Great ${playerName}!!!
+      You found all the matches.
+      Please reset the game for a new set of cards.`);
+      delayTime = delayForSpecialMessage;
+    }
+    else
+    {
+      setGameStatusInfo(`You found a match. Current Score: ${gameTotalScore}.
+                         Please continue after this message disappears`);
+    }
+
+    // Disappearing the messahge
     setTimeout(() => {
       canClick = true;
       setGameStatusInfo('');
-    }, delayInMilliSeconds);
+    }, delayTime);
   }
   else {
     // If the 2 selected cards are not matching, reset the firstCard
@@ -283,6 +300,8 @@ const resetElements = () => {
     boardElement.innerHTML = '';
   }
   divGameStatusInfo.innerHTML = '';
+  gameTotalScore = 0;
+  gameAttempts = 0;
 };
 
 // This function performs all other intializations of the game
