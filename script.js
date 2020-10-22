@@ -86,6 +86,7 @@ const boardSize = 4; // has to be an even number
 const delayInMilliSeconds = 3 * 1000;
 const delayForSpecialMessage = 5 * 1000;
 const intervalInMilliSeconds = 1000 * 60 * 3; // 180000 = 3 minutes
+let countDownTime = intervalInMilliSeconds;
 // Store the cardElement of the first card.
 // Used to turn it over, in case a match is not founded.
 let firstCardElement = null;
@@ -109,6 +110,10 @@ const inputPlayerName = document.createElement('input');
 const inputNameSubmitButton = document.createElement('button');
 // Refresh button
 const resetButton = document.createElement('button');
+// element for displaying countdown timer
+const divTimer = document.createElement('div');
+// create a p element for displaying time
+const paraTimerElement = document.createElement('p');
 
 // create a helper function for setting the information on game
 const setGameStatusInfo = (message) => {
@@ -380,14 +385,18 @@ const gameInit = () => {
   divStartEl.appendChild(startButton);
 
   const stopButton = document.createElement('button');
-  stopButton.innerText = 'Stop Game';
+  stopButton.innerText = 'Stop Timer';
   stopButton.classList.add('common-margin');
   stopButton.addEventListener('click', onClickStopButton);
   divStartEl.appendChild(stopButton);
 
+  divTimer.classList.add('common-margin');
+  divTimer.appendChild(paraTimerElement);
+
   document.body.appendChild(divInputNameElements);
   document.body.appendChild(divResetEl);
   document.body.appendChild(divStartEl);
+  document.body.appendChild(divTimer);
 
   // Add a class to game status
   divGameStatusInfo.classList.add('status');
