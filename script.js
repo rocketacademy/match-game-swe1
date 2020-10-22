@@ -21,7 +21,7 @@ let ref2 = ''; // define & capture reference to the event where first 3 cards ar
 let ref3 = ''; // special event
 let timeLeft = 0; // capture the amount of time left; initialized to 0
 
-const boardSize = 4; // has to be an even number
+const boardSize = 2; // has to be an even number
 // game only starts when squareClicked.
 let numOfClicks = 0;
 let score = 0;
@@ -142,8 +142,6 @@ const makeDeck = () => {
         color: colorX,
       };
 
-      // console.log(`rank: ${rankCounter}`);
-
       // add the card to the deck
       newDeck.push(card); // add double the cards to the deck
       newDeck.push(card);
@@ -202,8 +200,8 @@ const clearCardDisplay = (cardHtml) => {
 // Say congrats and disappear in 5 seconds
 const congratulations = (timeLeft) => {
   const congratsDisplay = document.createElement('div');
+  console.log(timeLeft);
   congratsDisplay.innerHTML = `<img src="https://media4.giphy.com/media/g9582DNuQppxC/200.gif"/>   Congratulations! You\'ve won the game in ${timeLeft} seconds!</img>`;
-  console.log(timeLeft, 'timeleft in congratulations fn');
   setTimeout(() => {
     congratsDisplay.innerHTML = '';
   }, 5000);
@@ -217,6 +215,7 @@ const startGameTimer = (time) => {
 
     ref = setInterval(() => {
       time -= 1;
+      timeLeft = countDownTime - time;
       timer.innerHTML = initialMessage + time + 's';
     }, 1000);
 
@@ -235,23 +234,16 @@ const startGameTimer = (time) => {
       // restart the game after 3 seconds
       setTimeout(() => {
         noClickResetGame();
-        console.log('game is resetting');
       }, 4000);
     }, 180000); // 180s or 3mins
   } else if (numOfClicks > 1 && score === boardSize) {
     clearInterval(ref);
-    console.log('time remaining is ' + time);
-    timeLeft = time;
-    console.log(timeLeft, 'timeleft in startGameTimer fn');
   }
 };
 const displayScore = () => `Your score is ${score}.`;
 
 const squareClick = (cardElement, column, row) => {
   numOfClicks += 1;
-
-  // console.log('FIRST CARD', firstCard);
-  // console.log('CLICKED CARD', board[column][row]);
 
   // firstCard is the card object
   // cardElement is HTML
@@ -271,7 +263,6 @@ const squareClick = (cardElement, column, row) => {
       // turn this card over
 
       // Tracking the firstCard's HTML in firstCardHTML
-
       // clearCardDisplay(firstCardHtml);
       // clearCardDisplay(secondCardHtml);
       firstCardHtml = cardElement;
@@ -286,9 +277,7 @@ const squareClick = (cardElement, column, row) => {
   else if (board[column][row].name === firstCard.name
   && board[column][row].suit === firstCard.suit) {
     console.log(board[column][row].name, 'name of card');
-    console.log(firstCard, 'firstCard');
 
-    console.log('test2');
     if (positionArray[column][row] === 'x') {
       outputDivTag.innerHTML = 'Illegal. You cannot choose the same card.';
       positionArray[firstCol][firstRow] = '';
@@ -301,7 +290,6 @@ const squareClick = (cardElement, column, row) => {
       outputDivTag.innerHTML = 'Illegal. You cannot choose a matched card.';
       positionArray[firstCol][firstRow] = '';
       clearCardDisplay(firstCardHtml);
-      console.log('test5');
     }
     // if secondCard is not already selected 'x' or already 'matched - then assign secondCard to current cardElement
     else if (positionArray[column][row] !== 'x' && positionArray[firstCol][firstRow] !== 'matched') {
@@ -337,13 +325,10 @@ const squareClick = (cardElement, column, row) => {
 
     // Remove message after 3 seconds
     setTimeout(() => { outputDivTag.innerHTML = ''; }, 3000);
-    // firstCard = null;
-    // secondCard = null;
     // In the event there is no match between the 1st 2 cards
   }
   // after firstCard is revealed, and secondCard is NOT the same as firstCard
   else if (firstCard !== null && secondCard === null) {
-    console.log('test3');
     // turn this card back over
     secondCard = board[column][row];
     secondCardHtml = cardElement;
@@ -356,13 +341,9 @@ const squareClick = (cardElement, column, row) => {
       secondCard = null;
       ref2 = setTimeout(() => {
         clearCardDisplay(firstCardHtml);
-        // clearCardDisplay(secondCardHtml);
-        console.log('clear card 1');
       }, 500);
       // else if first card is x and second card is empty and no match:
     } else if (positionArray[column][row] === '') {
-      // positionArray[firstCol][firstRow] = '';
-      console.log('test');
       console.log(positionArray);
       positionArray[firstCol][firstRow] = '';
       firstCard = null;
@@ -385,13 +366,11 @@ const squareClick = (cardElement, column, row) => {
   else if (firstCard !== null && secondCard !== null && currentNotMatched === true) {
     // Immediately stop the first 2 references and restore to the first if-statement of a player drawing a new card
     currentMatched = false;
-    console.log('testestest');
     clearInterval(ref2);
     clearInterval(ref3);
     firstCard = null;
     secondCard = null;
     // positionArray[firstCol][firstRow] = '';
-    console.log(positionArray);
     // const clearCardHtml3 = firstCardHtml;
     clearCardDisplay(firstCardHtml);
     clearCardDisplay(secondCardHtml);
