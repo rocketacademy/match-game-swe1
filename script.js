@@ -1,9 +1,22 @@
 // ======Global variables=====================
 let outputBox = null;
 let firstCardElement = null;
+let canClick = true;
+const firstCardColRowIndex = [];
+const gameDurationis3Min = 1000 * 60 * 3;
+const START_GAME = null;
+const TIMES_UP = null;
+let gameMode = START_GAME;
 
-const myOutputValue = 'Welcome! try to find two matching cards in the grid below!';
-// =================================
+const board = [];
+let firstCard = null;
+const boardSize = 4; // has to be an even number
+
+let deck;
+
+// =======Helper functions==========================
+
+// --------------Make deck---------------------
 const makeDeck = () => {
   // create the empty deck at the beginning
   const newDeck = [];
@@ -72,13 +85,11 @@ const makeDeck = () => {
 
   return newDeck;
 };
-// ============RNG=======================
-
+// --------------RNG------------------------------
 // get a random index from an array given it's size
 const getRandomIndex = (size) => Math.floor(Math.random() * size);
 
-// ======================================
-
+// --------------shuffle cards---------------------
 // cards is an array of card objects
 const shuffleCards = (cards) => {
   // loop over the entire cards array
@@ -101,14 +112,10 @@ const shuffleCards = (cards) => {
   return cards;
 };
 
-// =====================================
-const board = [];
-let firstCard = null;
-const boardSize = 4; // has to be an even number
-
-let deck;
+// ------------Square click-------------------------------
 
 const squareClick = (cardElement, column, row) => {
+  console.log('card element is');
   console.log(cardElement);
   // createCard(cardElement);
   // board.column.row.appendChild(createCard);
@@ -122,25 +129,34 @@ const squareClick = (cardElement, column, row) => {
   // if no first card has been selected,
   if (firstCard === null) {
     // assign clicked card data to firstCard variable
-    firstCard = board[column][row];
+    firstCard = clickedCard;
     // assign the clicked card's element to the firstCardElement variable
     firstCardElement = cardElement;
     // turn this card over; set card element's inner text to display the card's name
     cardElement.innerText = firstCard.display;
     outputBox.innerText = 'Choose a second card';
+    // if user attempts to re-click the same square, tell him to click other squares
+  } else if (firstCardElement == cardElement) {
+    outputBox.innerText = 'Pls pick a different card';
   }
+
   // if the cards match: if the property 'name' of the clicked card is  the same as the first card's
-  else if (board[column][row].display === firstCard.display
+  else if ((clickedCard.display === firstCard.display
   // if the property 'suit' of the clicked card is the same as the first card's
-  && board[column][row].suit === firstCard.suit) {
+  && clickedCard.suit === firstCard.suit)) {
     // turn this card over
     console.log('match');
     // change inner text of cardElement variable to show the 'name' property in firstCard
     cardElement.innerText = firstCard.display;
     outputBox.innerText = 'Match! You win!';
+    setTimeout(() => {
+      outputBox.innerText = '';
+    }, 3000);
+    firstCard = null;
   }
   // if the cards do not match:
   else {
+    canClick = false;
     cardElement.innerText = clickedCard.display;
     setTimeout(() => {
     // clear the data of the first card
@@ -150,12 +166,13 @@ const squareClick = (cardElement, column, row) => {
       cardElement.innerText = '';
 
       // re-enable clicking
+      canClick = true;
     }, 2000);
     outputBox.innerText = 'No match! :( Try again';
   }
 };
 
-// ================================================
+// ------------build the board's elements-------------------------------
 const buildBoardElements = (board) => {
   // create the element that everything will go inside of
   const boardElement = document.createElement('div');
@@ -187,7 +204,9 @@ const buildBoardElements = (board) => {
         // we will want to pass in the card element so
         // that we can change how it looks on screen, i.e.,
         // "turn the card over"
-        squareClick(event.currentTarget, i, j);
+        if ((canClick === true) && (gameMode == START_GAME)) {
+          squareClick(event.currentTarget, i, j);
+        }
       });
 
       rowElement.appendChild(square);
@@ -198,12 +217,12 @@ const buildBoardElements = (board) => {
   return boardElement;
 };
 
-// ========initialise game================================
+// ========Game flow================================
 const gameInit = () => {
   // /create an outputbox
   outputBox = document.createElement('div');
   outputBox.classList.add('outputBox');
-  outputBox.innerText = myOutputValue;
+  outputBox.innerText = 'Welcome! try to find two matching cards in the grid below!';
 
   // create this special deck by getting the doubled cards and
   // making a smaller array that is ( boardSize squared ) number of cards
@@ -224,5 +243,10 @@ const gameInit = () => {
   document.body.appendChild(outputBox);
   document.body.appendChild(boardEl);
 };
-
+//= ========Start the game================================
 gameInit();
+
+setTimeout(() => {
+  gameMode = TIMES_UP;
+  outputBox.innerText = ' Time\'s up! (3 mins) Click refresh the page and try again ';
+}, gameDurationis3Min);
