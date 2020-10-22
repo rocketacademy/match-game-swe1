@@ -97,8 +97,8 @@ let intervalReference = null;
 // To store the name
 let playerName = '';
 // // Score variable
-// const gameTotalScore = 0;
-// const gameAttempts = 0;
+let gameTotalScore = 0;
+let gameAttempts = 0;
 
 // A div element to display information on Game status when necessary
 const divGameStatusInfo = document.createElement('div');
@@ -163,6 +163,9 @@ const squareCardClick = (cardElement, column, row) => {
   {
     return;
   }
+  // Whenever a second click is made, it is counted as an attempt
+  gameAttempts = (firstCard !== null) ? 1 : gameAttempts;
+
   const currentCard = boardOfCards[column][row];
   if (currentCard.matched)
   {
@@ -187,15 +190,21 @@ const squareCardClick = (cardElement, column, row) => {
     displayCardElement(cardElement, firstCard);
     firstCardElement = cardElement;
   }
+  // Condition for matching
   else if (currentCard.name === firstCard.name
     && currentCard.suit === firstCard.suit) {
     // turn this card over
     displayCardElement(cardElement, currentCard);
-    console.log('match');
-    setGameStatusInfo('You found a match. Please continue game after this message disappears');
+
+    // when a match is found, score is increased
+    gameTotalScore += 1;
+    setGameStatusInfo(`You found a match. Current Score: ${gameTotalScore}.
+    Please continue game after this message disappears`);
+
     changeMatchedCardsDisplay(firstCardElement, cardElement);
     setMatchedCards(currentCard);
     firstCard = null;
+
     // When the user matches a card, show a match message for 3 seconds, then make it disappear.
     setTimeout(() => {
       canClick = true;
@@ -205,7 +214,9 @@ const squareCardClick = (cardElement, column, row) => {
   else {
     // If the 2 selected cards are not matching, reset the firstCard
     // setGameStatusInfo('Not a match.');
-    setGameStatusInfo(`Not a match. Please wait for ${(delayInMilliSeconds / 1000)} seconds before pressing another card. `);
+    setGameStatusInfo(`Not a match.
+    Please wait for ${(delayInMilliSeconds / 1000)} seconds before pressing another card. `);
+
     /*
     When the user clicks a square for a second time,
     turn the card over and if it doesn't match the first card,
