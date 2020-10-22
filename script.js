@@ -32,6 +32,9 @@ const positionOfCardClicked = {
   column: '',
   row: '',
 };
+// create resetButton here
+const resetButton = document.createElement('button');
+resetButton.setAttribute('id', 'rest');
 
 // Main Output Area:
 const outputValue = 'Hi, please input your name :)';
@@ -44,6 +47,34 @@ const scoreOutputDivTag = document.createElement('div');
 const timer = document.createElement('div');
 
 // Helper functions below::
+
+const restartGlobalVariables = () => {
+// Global variables
+  board.length = 0;
+
+  // To track position of cards clicked and matched
+  positionArray.length = 0;
+  // firstCol;
+  // firstRow;
+
+  firstCard = null;
+  secondCard = null;
+
+  // Global state to track if cards are currently matched - purpose is to prevent the 3rd click which  yields a new firstCardHtml from erasing the 1st click's firstCardHtml
+  currentNotMatched = true;
+
+  ref = ''; // define & capture reference to timer event;
+  ref2 = ''; // define & capture reference to the event where first 3 cards are clicked and the 1st 2 cards must be cleared.
+  ref3 = ''; // special event
+  timeLeft = 0; // capture the amount of time left; initialized to 0
+
+  numOfClicks = 0;
+  score = 0;
+
+  // Refresh position of card clicked and prevent user from clicking on the same card multiple times to score
+  positionOfCardClicked.column = '';
+  positionOfCardClicked.row = '';
+};
 
 const getRandomIndex = (size) => Math.floor(Math.random() * size);
 
@@ -178,9 +209,6 @@ const congratulations = (timeLeft) => {
   }, 5000);
   document.body.appendChild(congratsDisplay);
 };
-
-const displayScore = () => `Your score is ${score}.`;
-
 const startGameTimer = (time) => {
   if (numOfClicks === 1) {
     time = 180;
@@ -195,7 +223,20 @@ const startGameTimer = (time) => {
     // if game ends before all cards are matched, clear interval
     setTimeout(() => {
       clearInterval(ref);
-      timer.innerHTML = 'Time\'s up!';
+      let x = 3;
+      // display message to user that game is restarting in 3 seconds synchronously
+      const ref4 = setInterval(() => {
+        timer.innerHTML = `Time\'s up! You lost. Restarting in ${x}...`;
+        x -= 1;
+        if (x === 0) {
+          clearInterval(ref4);
+        }
+      }, 1000);
+      // restart the game after 3 seconds
+      setTimeout(() => {
+        noClickResetGame();
+        console.log('game is resetting');
+      }, 4000);
     }, 180000); // 180s or 3mins
   } else if (numOfClicks > 1 && score === boardSize) {
     clearInterval(ref);
@@ -204,6 +245,7 @@ const startGameTimer = (time) => {
     console.log(timeLeft, 'timeleft in startGameTimer fn');
   }
 };
+const displayScore = () => `Your score is ${score}.`;
 
 const squareClick = (cardElement, column, row) => {
   numOfClicks += 1;
@@ -250,6 +292,7 @@ const squareClick = (cardElement, column, row) => {
     if (positionArray[column][row] === 'x') {
       outputDivTag.innerHTML = 'Illegal. You cannot choose the same card.';
       positionArray[firstCol][firstRow] = '';
+      firstCard = null;
       secondCard = null;
       clearCardDisplay(secondCardHtml);
       clearCardDisplay(firstCardHtml);
@@ -464,37 +507,32 @@ const gameInit = () => {
   scoreOutputDivTag.innerHTML = `Your score is ${score}`;
 
   // Append all necessary elements below:
+
   document.body.appendChild(boardEl);
   document.body.appendChild(outputDivTag);
   document.body.appendChild(scoreOutputDivTag);
   document.body.appendChild(timer);
+  document.body.appendChild(resetButton);
+};
+
+const noClickResetGame = () => {
+  // remove all elements under document.body
+  document.body.innerHTML = '';
+  timer.innerHTML = '';
+  clearInterval(ref);
+  restartGlobalVariables();
+  gameInit();
+  resetGame();
 };
 
 const resetGame = () => {
-  const resetButton = document.createElement('button');
-  resetButton.setAttribute('id', 'rest');
   resetButton.innerHTML = 'Reset Game';
   resetButton.addEventListener('click', () => {
     // setting the length of board array to zero removes all items in the array;
     board.length = 0;
     // remove all elements under document.body
-    document.body.innerHTML = '';
-    gameInit();
-    resetGame();
-  });
-
-  document.body.appendChild(resetButton);
+    noClickResetGame(); });
 };
-
-// const waitToTurnCardsOver = (clearCardHtml,clearCardHtml2) = {
-// setTimeout(() => {
-//   clearCardDisplay(clearCardHtml);
-//   clearCardDisplay(clearCardHtml2);
-//   // firstCard = null;
-//   // secondCard = null;
-//   console.log('clear card 2');
-// }, 5000);
-// }
 
 // Run the program
 
