@@ -42,6 +42,9 @@ const scoreOutputDivTag = document.createElement('div');
 const timer = document.createElement('div');
 
 // Helper functions below::
+
+const getRandomIndex = (size) => Math.floor(Math.random() * size);
+
 const makeDeck = () => {
   // create the empty deck at the beginning
   const newDeck = [];
@@ -137,7 +140,66 @@ const shuffleCards = (cards) => {
   return cards;
 };
 
-const getRandomIndex = (size) => Math.floor(Math.random() * size);
+// Fn to display card in squareClick method
+const outputCardDisplay = (cardHtml, card) => {
+  for (let i = 0; i < cardHtml.childNodes.length; i += 1) {
+    const currNode = cardHtml.childNodes[i];
+    if (currNode.className === 'displayName') {
+      currNode.innerHTML = card.display;
+    } else {
+      currNode.innerHTML = card.symbol;
+    }
+  }
+};
+
+// Fn to clear text by each nested div inside square divs
+const clearCardDisplay = (cardHtml) => {
+  for (let i = 0; i < cardHtml.childNodes.length; i += 1) {
+    const currNode = cardHtml.childNodes[i];
+    if (currNode.className === 'displayName') {
+      currNode.innerHTML = '';
+    } else {
+      currNode.innerHTML = '';
+    }
+  }
+};
+
+// Say congrats and disappear in 5 seconds
+const congratulations = (timeLeft) => {
+  const congratsDisplay = document.createElement('div');
+  congratsDisplay.innerHTML = `<img src="https://media4.giphy.com/media/g9582DNuQppxC/200.gif"/>   Congratulations! You\'ve won the game in ${timeLeft} seconds!</img>`;
+  console.log(timeLeft, 'timeleft in congratulations fn');
+  setTimeout(() => {
+    congratsDisplay.innerHTML = '';
+  }, 5000);
+  document.body.appendChild(congratsDisplay);
+};
+
+const displayScore = () => `Your score is ${score}.`;
+
+const startGameTimer = (time) => {
+  if (numOfClicks === 1) {
+    time = 180;
+    const initialMessage = 'Time left: ';
+    timer.innerHTML = initialMessage + time + 's';
+
+    ref = setInterval(() => {
+      time -= 1;
+      timer.innerHTML = initialMessage + time + 's';
+    }, 1000);
+
+    // if game ends before all cards are matched, clear interval
+    setTimeout(() => {
+      clearInterval(ref);
+      timer.innerHTML = 'Time\'s up!';
+    }, 180000); // 180s or 3mins
+  } else if (numOfClicks > 1 && score === boardSize) {
+    clearInterval(ref);
+    console.log('time remaining is ' + time);
+    timeLeft = time;
+    console.log(timeLeft, 'timeleft in startGameTimer fn');
+  }
+};
 
 const squareClick = (cardElement, column, row) => {
   numOfClicks += 1;
@@ -333,32 +395,6 @@ const buildBoardElements = (board) => {
   return boardElement;
 };
 
-const displayScore = () => `Your score is ${score}.`;
-
-const startGameTimer = (time) => {
-  if (numOfClicks === 1) {
-    time = 180;
-    const initialMessage = 'Time left: ';
-    timer.innerHTML = initialMessage + time + 's';
-
-    ref = setInterval(() => {
-      time -= 1;
-      timer.innerHTML = initialMessage + time + 's';
-    }, 1000);
-
-    // if game ends before all cards are matched, clear interval
-    setTimeout(() => {
-      clearInterval(ref);
-      timer.innerHTML = 'Time\'s up!';
-    }, 180000); // 180s or 3mins
-  } else if (numOfClicks > 1 && score === boardSize) {
-    clearInterval(ref);
-    console.log('time remaining is ' + time);
-    timeLeft = time;
-    console.log(timeLeft, 'timeleft in startGameTimer fn');
-  }
-};
-
 // Function that creates the userName input;
 const getUserNameInput = () => {
 // Creating the input box & submit button to take user name
@@ -383,6 +419,7 @@ const getUserNameInput = () => {
   });
   document.body.appendChild(inputDiv);
 };
+// Fn to outputCardDisplay by each nested div inside square divs
 
 // Function that initializes the game;
 const gameInit = () => {
@@ -431,40 +468,6 @@ const resetGame = () => {
   });
 
   document.body.appendChild(resetButton);
-};
-
-// Say congrats and disappear in 5 seconds
-const congratulations = (timeLeft) => {
-  const congratsDisplay = document.createElement('div');
-  congratsDisplay.innerHTML = `<img src="https://media4.giphy.com/media/g9582DNuQppxC/200.gif"/>   Congratulations! You\'ve won the game in ${timeLeft} seconds!</img>`;
-  console.log(timeLeft, 'timeleft in congratulations fn');
-  setTimeout(() => {
-    congratsDisplay.innerHTML = '';
-  }, 5000);
-  document.body.appendChild(congratsDisplay);
-};
-
-// Fn to outputCardDisplay by each nested div inside square divs
-const outputCardDisplay = (cardHtml, card) => {
-  for (let i = 0; i < cardHtml.childNodes.length; i += 1) {
-    const currNode = cardHtml.childNodes[i];
-    if (currNode.className === 'displayName') {
-      currNode.innerHTML = card.display;
-    } else {
-      currNode.innerHTML = card.symbol;
-    }
-  }
-};
-// Fn to clear text by each nested div inside square divs
-const clearCardDisplay = (cardHtml) => {
-  for (let i = 0; i < cardHtml.childNodes.length; i += 1) {
-    const currNode = cardHtml.childNodes[i];
-    if (currNode.className === 'displayName') {
-      currNode.innerHTML = '';
-    } else {
-      currNode.innerHTML = '';
-    }
-  }
 };
 
 // Run the program
