@@ -9,6 +9,8 @@ let firstRow;
 let firstCard = null;
 let secondCard = null;
 
+// Global state to track if cards are currently matched - purpose is to prevent the 3rd click which  yields a new firstCardHtml from erasing the 1st click's firstCardHtml
+let currentNotMatched = true;
 // track the first card and second card's HTML equivalent
 let firstCardHtml;
 let secondCardHtml;
@@ -154,12 +156,14 @@ const outputCardDisplay = (cardHtml, card) => {
 
 // Fn to clear text by each nested div inside square divs
 const clearCardDisplay = (cardHtml) => {
-  for (let i = 0; i < cardHtml.childNodes.length; i += 1) {
-    const currNode = cardHtml.childNodes[i];
-    if (currNode.className === 'displayName') {
-      currNode.innerHTML = '';
-    } else {
-      currNode.innerHTML = '';
+  if (cardHtml) {
+    for (let i = 0; i < cardHtml.childNodes.length; i += 1) {
+      const currNode = cardHtml.childNodes[i];
+      if (currNode.className === 'displayName') {
+        currNode.innerHTML = '';
+      } else {
+        currNode.innerHTML = '';
+      }
     }
   }
 };
@@ -212,6 +216,7 @@ const squareClick = (cardElement, column, row) => {
   if (firstCard === null && secondCard === null) {
     firstCol = column;
     firstRow = row;
+    currentNotMatched = true;
     console.log(firstCardHtml, 'firstCardHtml');
 
     if (positionArray[column][row] === 'matched') {
@@ -222,12 +227,11 @@ const squareClick = (cardElement, column, row) => {
       console.log(firstCard, 'first card is reassigned');
       positionArray[column][row] = 'x';
       // turn this card over
+
       // Tracking the firstCard's HTML in firstCardHTML
 
-      // if (firstCardHtml !== '') {
-      //   clearInterval(ref3);
-      //   clearCardDisplay(firstCardHtml);
-      // }
+      // clearCardDisplay(firstCardHtml);
+      // clearCardDisplay(secondCardHtml);
       firstCardHtml = cardElement;
 
       outputCardDisplay(firstCardHtml, firstCard);
@@ -239,6 +243,9 @@ const squareClick = (cardElement, column, row) => {
   // after firstCard is revealed, check if secondCard is the same as firstCard
   else if (board[column][row].name === firstCard.name
   && board[column][row].suit === firstCard.suit) {
+    console.log(board[column][row].name, 'name of card');
+    console.log(firstCard, 'firstCard');
+
     console.log('test2');
     if (positionArray[column][row] === 'x') {
       outputDivTag.innerHTML = 'Illegal. You cannot choose the same card.';
@@ -251,16 +258,17 @@ const squareClick = (cardElement, column, row) => {
       outputDivTag.innerHTML = 'Illegal. You cannot choose a matched card.';
       positionArray[firstCol][firstRow] = '';
       clearCardDisplay(firstCardHtml);
-    // eslint-disable-next-line max-len
-    // else if no match, did not choose a chosen card, did not choose a matched card -- clear both cards display
-    // First check if user is not clicking on the same card again
-    } else if (positionArray[column][row] !== 'x' && positionArray[firstCol][firstRow] !== 'matched') {
+      console.log('test5');
+    }
+    // if secondCard is not already selected 'x' or already 'matched - then assign secondCard to current cardElement
+    else if (positionArray[column][row] !== 'x' && positionArray[firstCol][firstRow] !== 'matched') {
       // reassign secondCardHtml to new cardElement;
       secondCard = board[column][row];
       secondCardHtml = cardElement;
       // turn this card over
       secondCardHtml.innerHTML = `${secondCard.display} <br> ${secondCard.symbol}`;
       outputDivTag.innerHTML = 'Its a match!';
+      currentNotMatched = false;
       // Increment score by 1 and output it into the scoreOutputDivTag
       score += 1;
 
@@ -274,7 +282,8 @@ const squareClick = (cardElement, column, row) => {
       firstCol = '';
       firstRow = '';
       scoreOutputDivTag.innerHTML = displayScore();
-
+      firstCard = null;
+      secondCard = null;
       // else clicking on positionArray with some position  or choosing a matched card inside
     } else if (positionArray[column][row] === '') {
       setTimeout(() => {
@@ -285,8 +294,8 @@ const squareClick = (cardElement, column, row) => {
 
     // Remove message after 3 seconds
     setTimeout(() => { outputDivTag.innerHTML = ''; }, 3000);
-    firstCard = null;
-    secondCard = null;
+    // firstCard = null;
+    // secondCard = null;
     // In the event there is no match between the 1st 2 cards
   }
   // after firstCard is revealed, and secondCard is NOT the same as firstCard
@@ -310,13 +319,18 @@ const squareClick = (cardElement, column, row) => {
       // else if first card is x and second card is empty and no match:
     } else if (positionArray[column][row] === '') {
       // positionArray[firstCol][firstRow] = '';
+      console.log('test');
       console.log(positionArray);
+      positionArray[firstCol][firstRow] = '';
+      firstCard = null;
+      secondCard = null;
+      const clearCardHtml = firstCardHtml;
+
       ref3 = setTimeout(() => {
-        positionArray[firstCol][firstRow] = '';
-        clearCardDisplay(firstCardHtml);
+        clearCardDisplay(clearCardHtml);
         clearCardDisplay(secondCardHtml);
-        firstCard = null;
-        secondCard = null;
+        // firstCard = null;
+        // secondCard = null;
         console.log('clear card 2');
       }, 500);
     }
@@ -325,15 +339,17 @@ const squareClick = (cardElement, column, row) => {
     // else if you clicked on 1st card and 2nd card (and now 3rd card)
   }
   // after firstCard and secondCard are both revealed and I click on a thirdCard
-  else if (firstCard !== null && secondCard !== null) {
+  else if (firstCard !== null && secondCard !== null && currentNotMatched === true) {
     // Immediately stop the first 2 references and restore to the first if-statement of a player drawing a new card
+    currentMatched = false;
     console.log('testestest');
     clearInterval(ref2);
     clearInterval(ref3);
     firstCard = null;
     secondCard = null;
-    positionArray[firstCol][firstRow] = '';
+    // positionArray[firstCol][firstRow] = '';
     console.log(positionArray);
+    // const clearCardHtml3 = firstCardHtml;
     clearCardDisplay(firstCardHtml);
     clearCardDisplay(secondCardHtml);
     // Calling squareclick() again recursively: clear 1st 2 cards and  simulate running the fn from the start by calling this fn again
@@ -469,6 +485,16 @@ const resetGame = () => {
 
   document.body.appendChild(resetButton);
 };
+
+// const waitToTurnCardsOver = (clearCardHtml,clearCardHtml2) = {
+// setTimeout(() => {
+//   clearCardDisplay(clearCardHtml);
+//   clearCardDisplay(clearCardHtml2);
+//   // firstCard = null;
+//   // secondCard = null;
+//   console.log('clear card 2');
+// }, 5000);
+// }
 
 // Run the program
 
