@@ -6,6 +6,7 @@ const matchesNeededToWin = (boardSize * boardSize) / 2;
 let numOfMatches = 0;
 let deck;
 let playerName;
+let secondsLeftTillGameOver = 10;
 
 let gameStatus = 'playGame';
 
@@ -318,6 +319,18 @@ const gameInit = () => {
 
     // remove playerNameInputContainer display
     playerNameInputContainer.remove();
+
+    // start timer till match ends
+    const matchTimer = setInterval(() => {
+      secondsLeftTillGameOver -= 1;
+      matchCountdownTimer.innerText = `Time Left: ${secondsLeftTillGameOver}s`;
+
+      if (secondsLeftTillGameOver <= 0) {
+        clearInterval(matchTimer);
+        gameStatus = 'stopGame';
+        output('Sorry time is up! Please refresh the page to play again.');
+      }
+    }, 1000);
   });
 
   // initialize game info div with starting instructions
@@ -326,13 +339,11 @@ const gameInit = () => {
   document.body.appendChild(gameInfo);
 
   document.body.appendChild(scoreMessage);
+
+  // display match's countdown timer
+  matchCountdownTimer.innerText = `Time Left: ${secondsLeftTillGameOver}s`;
+  document.body.appendChild(matchCountdownTimer);
 };
 
 // start game
 gameInit();
-
-// setTimer till game ends
-setTimeout(() => {
-  gameStatus = 'stopGame';
-  output('Sorry time is up! Please refresh the page to play again.');
-}, 180000);
