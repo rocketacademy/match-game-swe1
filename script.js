@@ -83,9 +83,12 @@ const makeDeck = () => {
 const boardOfCards = [];
 let firstCard = null;
 const boardSize = 4; // has to be an even number
-const delayInMilliSeconds = 3 * 1000;
+const delayForGameStatusInMilliSeconds = 3 * 1000;
 const delayForSpecialMessage = 5 * 1000;
-const intervalInMilliSeconds = 1000 * 60 * 3; // 180000 = 3 minutes
+const intervalSingleSecond = 1000;
+const intervalInMinutes = 1;
+const intervalInSeconds = intervalInMinutes * 60;
+const intervalInMilliSeconds = 1000 * intervalInSeconds; // 180000 = 3 minutes
 let countDownTime = intervalInMilliSeconds;
 // Store the cardElement of the first card.
 // Used to turn it over, in case a match is not founded.
@@ -95,7 +98,9 @@ let gameStarted = false;
 // this variable stores the sliced card deck as per the board size
 let deck;
 // To store the reference to interval function to start the game
-let intervalReference = null;
+const intervalReference = null;
+// To store the reference to the timeout function
+let timeoutIntervalReference = null;
 // To store the name
 let playerName = '';
 // // Score variable
@@ -119,6 +124,10 @@ const paraTimerElement = document.createElement('p');
 const setGameStatusInfo = (message) => {
   divGameStatusInfo.innerText = message;
 };
+
+const setTimerMessage = (message) => { paraTimerElement.innerText = message; };
+
+const convertMillisecondsToSeconds = (milliseconds) => ((milliseconds / 1000));
 
 // Game Play
 
@@ -157,6 +166,8 @@ const setMatchedCards = (secondCard) => {
   firstCard.matched = true;
   secondCard.matched = true;
 };
+
+const doesPlayerWin = () => (gameTotalScore === ((boardSize * boardSize) / 2));
 
 let canClick = true;
 // This function handles the click on each square element corresponding to the
@@ -211,8 +222,8 @@ const squareCardClick = (cardElement, column, row) => {
     gameTotalScore += 1;
     // When the user matches a card, show a message for the specific time, then make it disappear.
     console.log(`Game Score: ${gameTotalScore}`);
-    let delayTime = delayInMilliSeconds;
-    if (gameTotalScore === ((boardSize * boardSize) / 2))
+    let delayTime = delayForGameStatusInMilliSeconds;
+    if (doesPlayerWin())
     {
       console.log('Maximum score got');
       // When the user matches all the cards, show a special message on screen for 5 seconds.
@@ -237,7 +248,7 @@ const squareCardClick = (cardElement, column, row) => {
     // If the 2 selected cards are not matching, reset the firstCard
     // setGameStatusInfo('Not a match.');
     setGameStatusInfo(`Not a match.
-    Please wait for ${(delayInMilliSeconds / 1000)} seconds before pressing another card. `);
+    Please wait for this message to disappear before pressing another card. `);
 
     /*
     When the user clicks a square for a second time,
@@ -253,7 +264,7 @@ const squareCardClick = (cardElement, column, row) => {
       firstCardElement.innerHTML = '';
       canClick = true;
       setGameStatusInfo('');
-    }, delayInMilliSeconds);
+    }, delayForGameStatusInMilliSeconds);
   }
 };
 
@@ -299,21 +310,32 @@ const buildBoardElements = (board) => {
 
 const resetElements = () => {
   console.log('resetElements');
+  if (timeoutIntervalReference !== null)
+  {
+    clearInterval(timeoutIntervalReference);
+  }
+  console.log(`Before: ${boardOfCards}`);
   boardOfCards.length = 0;
+  console.log(`After: ${boardOfCards}`);
   if (boardElement !== null)
   {
     boardElement.innerHTML = '';
   }
   divGameStatusInfo.innerHTML = '';
+  // setTimerMessage('');
   gameTotalScore = 0;
   gameAttempts = 0;
+  gameStarted = false;
 };
 
 // This function performs all other intializations of the game
 const startGame = () => {
   console.log('Start Game');
+  // If the game is already started
   if (gameStarted)
   {
+    // For handling the second automatic start, before the intervelled call to the game happens
+    // from the function onClickStartButton
     resetElements();
   }
   gameStarted = true;
@@ -334,12 +356,48 @@ const startGame = () => {
   document.body.appendChild(boardElement);
 };
 
+// Function to display the player Name
+const displayPlayerName = () => {
+  playerName = inputPlayerName.value;
+  setGameStatusInfo(`Hey ${playerName}, You can start playing.`);
+};
+
+const playGameWithTimer = () => {
+  if (playerName === '')
+  {
+    setGameStatusInfo('Please enter your name to start playing.');
+    return;
+  }
+  countDownTime = intervalInMilliSeconds * 5;
+  setTimerMessage(`Time remaining: ${convertMillisecondsToSeconds(countDownTime)} seconds.`);
+  startGame();
+
+  timeoutIntervalReference = setInterval(() => {
+    countDownTime -= intervalSingleSecond; // decrease the counter by interval time for the timer
+    setTimerMessage(`Time remaining: ${convertMillisecondsToSeconds(countDownTime)} seconds.`);
+    const playerWin = doesPlayerWin();
+    if (playerWin || countDownTime <= 0) // If the counter reaches zero, restart the game
+    {
+      if (playerWin)
+      {
+        setTimerMessage(`${playerName} wins. Please press Start if you would like to play more.`);
+        countDownTime = 0;
+      }
+      else { setTimerMessage(`${playerName} lost. Time over. Stopping the game.`); }
+      resetElements();
+      clearInterval(timeoutIntervalReference);
+    }
+  }, intervalSingleSecond);
+};
+
 // Function that starts the game. Here it resets the board of cards
 // Also it sets an interval to restart the game after a specific amount of time
 const onClickStartButton = () => {
   console.log('onClickStart');
-  startGame();
-  intervalReference = setInterval(startGame, intervalInMilliSeconds);
+  // startGame();
+  // intervalReference = setInterval(startGame, intervalInMilliSeconds);
+
+  playGameWithTimer();
 };
 
 // Function to stop the resetting of the game after an interval
@@ -348,18 +406,13 @@ const onClickStopButton = () => {
   resetElements();
 };
 
-// Function to display the player Name
-const displayPlayerName = () => {
-  playerName = inputPlayerName.value;
-  setGameStatusInfo(`Hey ${playerName}, You can start playing.`);
-};
-
 const gameInit = () => {
   // Section to handle the inputs received from user any
   const divInputNameElements = document.createElement('div');
   //   divInputNameElements.classList.add('common-margin');
   inputPlayerName.setAttribute('type', 'text');
-  inputPlayerName.setAttribute('placeholder', 'Enter your name for play');
+  inputPlayerName.required = true;
+  inputPlayerName.setAttribute('placeholder', 'Enter your name.');
   inputPlayerName.classList.add('common-margin');
   divInputNameElements.appendChild(inputPlayerName);
 
@@ -384,11 +437,13 @@ const gameInit = () => {
   startButton.addEventListener('click', onClickStartButton);
   divStartEl.appendChild(startButton);
 
-  const stopButton = document.createElement('button');
-  stopButton.innerText = 'Stop Timer';
-  stopButton.classList.add('common-margin');
-  stopButton.addEventListener('click', onClickStopButton);
-  divStartEl.appendChild(stopButton);
+  // For the time being there is no need of Start and Stop button
+  // as timer is being introduced.
+  // const stopButton = document.createElement('button');
+  // stopButton.innerText = 'Stop Timer';
+  // stopButton.classList.add('common-margin');
+  // stopButton.addEventListener('click', onClickStopButton);
+  // divStartEl.appendChild(stopButton);
 
   divTimer.classList.add('common-margin');
   divTimer.appendChild(paraTimerElement);
@@ -402,6 +457,8 @@ const gameInit = () => {
   divGameStatusInfo.classList.add('status');
   // Adding game info container to document.
   document.body.appendChild(divGameStatusInfo);
+
+  playGameWithTimer();
 };
 
 gameInit();
