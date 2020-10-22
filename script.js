@@ -4,6 +4,10 @@ let firstCard = null;
 const boardSize = 4; // has to be an even number
 const matchesNeededToWin = (boardSize * boardSize) / 2;
 let numOfMatches = 0;
+let deck;
+let playerName;
+
+let gameStatus = 'playGame';
 
 // to store the square elements that the player clicked on this round
 let firstClickedSquare;
@@ -12,16 +16,19 @@ let secondClickedSquare;
 // to store position of first square clicked
 const positionOfFirstSquareClicked = [];
 
-let canClick = true;
-
-let deck;
+// player cant click on squares at start of game
+// he or she must submit their name first
+let canClick = false;
 
 const gameInfo = document.createElement('div');
 
-let gameStatus = 'playGame';
-
 // display score message
 const scoreMessage = document.createElement('div');
+
+const playerNameInput = document.createElement('input');
+const playerNameButton = document.createElement('button');
+// Container for player name input and button
+const playerNameInputContainer = document.createElement('div');
 
 // Helper functions -----------------------------------------------
 // output message
@@ -107,7 +114,7 @@ const squareClick = (squareClickElement, column, row, boardElement) => {
 
       setTimeout(() => {
         document.body.removeChild(specialMessage);
-        output('Congratulations you have matched all cards! Please refresh to play again');
+        output(`Congratulations ${playerName}. You have matched all cards! Please refresh to play again`);
       }, 5000);
     }
 
@@ -288,8 +295,26 @@ const gameInit = () => {
 
   document.body.appendChild(boardEl);
 
+  // initilize name input and button
+  playerNameButton.innerText = 'Submit Name';
+  playerNameInput.setAttribute('id', 'player-name-input');
+  playerNameInput.setAttribute('placeholder', 'your name');
+  playerNameInputContainer.appendChild(playerNameInput);
+  playerNameInputContainer.appendChild(playerNameButton);
+  document.body.appendChild(playerNameInputContainer);
+
+  playerNameButton.addEventListener('click', () => {
+    playerName = playerNameInput.value;
+    output(`Welcome ${playerName}. You may now start playing by clicking on a square to flip over a card!`);
+    canClick = true;
+
+    // remove playerNameInputContainer display
+    playerNameInputContainer.remove();
+  });
+
   // initialize game info div with starting instructions
-  gameInfo.innerText = 'Click on a square to flip over a card!';
+  // gameInfo.innerText = 'Click on a square to flip over a card!';
+  gameInfo.innerText = 'Please enter your name and click the \'submit name\' button';
   document.body.appendChild(gameInfo);
 
   document.body.appendChild(scoreMessage);
