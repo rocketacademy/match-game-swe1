@@ -1,12 +1,15 @@
 // Global setup ----------------------------------------------------
-const board = [];
+let board = [];
 let firstCard = null;
 const boardSize = 4; // has to be an even number
 const matchesNeededToWin = (boardSize * boardSize) / 2;
 let numOfMatches = 0;
 let deck;
 let playerName;
-let secondsLeftTillGameOver = 10;
+let secondsLeftTillGameOver = 180;
+let numOfGames = 1;
+const loseMessage = 'Sorry but the time ran out! Click on a square to try again!';
+let timerId; // to store ID of startMatchTimer
 
 let gameStatus = 'playGame';
 
@@ -35,6 +38,71 @@ const playerNameInputContainer = document.createElement('div');
 const matchCountdownTimer = document.createElement('div');
 
 // Helper functions -----------------------------------------------
+// to start match timer
+const startMatchTimer = (gameInitNextGame, makeDeck, shuffleCards, buildBoardElements) => {
+  const matchTimerId = setInterval(() => {
+    secondsLeftTillGameOver -= 1;
+    matchCountdownTimer.innerText = `Time Left: ${secondsLeftTillGameOver}s`;
+
+    if (secondsLeftTillGameOver <= 0) {
+      clearInterval(matchTimerId);
+      gameStatus = 'stopGame';
+      numOfGames += 1;
+      gameInitNextGame(makeDeck, shuffleCards, buildBoardElements);
+    }
+  }, 1000);
+
+  return matchTimerId;
+};
+
+// to initilize the next game when game timer runs out
+const gameInitNextGame = (makeDeck, shuffleCards, buildBoardElements) => {
+  // clear the browser content
+  document.body.innerHTML = '';
+
+  // empty the current board
+  board = [];
+
+  // create this special deck by getting the doubled cards and
+  // making a smaller array that is ( boardSize squared ) number of cards
+  const doubleDeck = makeDeck(); // must not shuffle this deck bc you want to take out the pairs
+  const deckSubset = doubleDeck.slice(0, boardSize * boardSize);
+  deck = shuffleCards(deckSubset);
+
+  // deal the cards out to the new board data structure
+  for (let i = 0; i < boardSize; i += 1) {
+    board.push([]);
+    for (let j = 0; j < boardSize; j += 1) {
+      board[i].push(deck.pop());
+    }
+  }
+
+  const boardEl = buildBoardElements(board);
+
+  document.body.appendChild(boardEl);
+
+  // start timer till match ends
+  secondsLeftTillGameOver = 180;
+
+  timerId = startMatchTimer(gameInitNextGame, makeDeck, shuffleCards, buildBoardElements);
+
+  // initialize game info div with lose message
+  gameInfo.innerText = loseMessage;
+
+  document.body.appendChild(gameInfo);
+
+  document.body.appendChild(scoreMessage);
+
+  // display match's countdown timer
+  matchCountdownTimer.innerText = `Time Left: ${secondsLeftTillGameOver}s`;
+  document.body.appendChild(matchCountdownTimer);
+
+  // change global variables accordingly -------------------
+  gameStatus = 'playGame';
+  canClick = true;
+  numOfMatches = 0;
+};
+
 // output message
 const output = (message) => {
   gameInfo.innerHTML = message;
@@ -121,6 +189,8 @@ const squareClick = (squareClickElement, column, row, boardElement) => {
         document.body.removeChild(specialMessage);
         output(`Congratulations ${playerName}. You have matched all cards! Please refresh to play again`);
       }, 5000);
+
+      clearInterval(timerId);
     }
 
     // let player know that it is a match and to pick another card
@@ -320,22 +390,12 @@ const gameInit = () => {
     // remove playerNameInputContainer display
     playerNameInputContainer.remove();
 
-    // start timer till match ends
-    const matchTimer = setInterval(() => {
-      secondsLeftTillGameOver -= 1;
-      matchCountdownTimer.innerText = `Time Left: ${secondsLeftTillGameOver}s`;
-
-      if (secondsLeftTillGameOver <= 0) {
-        clearInterval(matchTimer);
-        gameStatus = 'stopGame';
-        output('Sorry time is up! Please refresh the page to play again.');
-      }
-    }, 1000);
+    timerId = startMatchTimer(gameInitNextGame, makeDeck, shuffleCards, buildBoardElements);
   });
 
-  // initialize game info div with starting instructions
-  // gameInfo.innerText = 'Click on a square to flip over a card!';
+  // initialize game info div with starting instructions depending on number of games played
   gameInfo.innerText = 'Please enter your name and click the \'submit name\' button';
+
   document.body.appendChild(gameInfo);
 
   document.body.appendChild(scoreMessage);
