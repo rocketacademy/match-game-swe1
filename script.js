@@ -17,9 +17,6 @@ let gameStatus = 'playGame';
 let firstClickedSquare;
 let secondClickedSquare;
 
-// to store position of first square clicked
-let positionOfFirstSquareClicked = [];
-
 // player cant click on squares at start of game
 // he or she must submit their name first
 let canClick = false;
@@ -151,18 +148,14 @@ const squareClick = (squareClickElement, column, row, boardElement) => {
   if (firstCard === null) {
     firstCard = board[column][row];
     firstClickedSquare = squareClickElement;
-    positionOfFirstSquareClicked = [];
-    positionOfFirstSquareClicked.push(column);
-    positionOfFirstSquareClicked.push(row);
 
     // turn this card over
     firstClickedSquare.innerText = `${firstCard.display},${firstCard.suitSymbol}`;
 
     // let player know to click another card
     output('Click on another square to flip over the 2nd card!');
-  } else if (column === positionOfFirstSquareClicked[0]
-    && row === positionOfFirstSquareClicked[1]) {
-    console.log('clicked on same card');
+  } else if (firstClickedSquare === squareClickElement) {
+    output('Clicked on same card. Please click on another card');
     // do nothing if player clicked on same card
   }
   else if (board[column][row].name === firstCard.name
