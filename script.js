@@ -14,7 +14,7 @@ let firstClickedSquare;
 let secondClickedSquare;
 
 // to store position of first square clicked
-const positionOfFirstSquareClicked = [];
+let positionOfFirstSquareClicked = [];
 
 // player cant click on squares at start of game
 // he or she must submit their name first
@@ -79,6 +79,7 @@ const squareClick = (squareClickElement, column, row, boardElement) => {
   if (firstCard === null) {
     firstCard = board[column][row];
     firstClickedSquare = squareClickElement;
+    positionOfFirstSquareClicked = [];
     positionOfFirstSquareClicked.push(column);
     positionOfFirstSquareClicked.push(row);
 
