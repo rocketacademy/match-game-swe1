@@ -21,7 +21,7 @@ let ref2 = ''; // define & capture reference to the event where first 3 cards ar
 let ref3 = ''; // special event
 let timeLeft = 0; // capture the amount of time left; initialized to 0
 
-const boardSize = 2; // has to be an even number
+const boardSize = 4; // has to be an even number
 // game only starts when squareClicked.
 let numOfClicks = 0;
 let score = 0;
