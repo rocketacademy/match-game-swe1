@@ -1,5 +1,6 @@
 // Global declaration
 const board = []; // board will be the array of arrays
+const messageElement = document.createElement('div');
 let firstCard = null;
 let firstCardE = null;
 const boardSize = 4;
@@ -82,7 +83,7 @@ const flipDownCards = (card1Element, card2Element) => {
   setTimeout(() => {
     card1Element.innerText = '';
     card2Element.innerText = '';
-  }, 1000);
+  }, 3000);
   firstCard = null;
 };
 
@@ -91,6 +92,20 @@ const flipUpOneCard = (cardObj, cardElement, col, row) => {
   cardObj = board[col][row];
   cardElement.innerText = cardObj.name;
   return cardObj;
+};
+
+// Function 9: Pop up message
+const popUpMessage = (message) => {
+  messageElement.innerText = '';
+  messageElement.innerText = message;
+  if (message === 'match!') {
+    messageElement.style.backgroundColor = 'green';
+  } else if (message === 'no match!') {
+    messageElement.style.backgroundColor = 'orange';
+  }
+  setTimeout(() => {
+    messageElement.innerText = '';
+  }, 2000);
 };
 
 // Function 4: when square clicked, check if cards match
@@ -110,14 +125,16 @@ const squareClick = (cardElement, column, row) => {
     // cardElement.innerText = firstCard.name;
     firstCardE = cardElement;
   // if card name and suit matches
-  } else if (board[column][row].name === firstCard.name) { // && board[column][row].suit === firstCard.suit
+  } else if (board[column][row].name === firstCard.name) {
     flipUpOneCard(secondCard, cardElement, column, row);
     console.log('match');
     // turn both cards back over
+    popUpMessage('match!');
     flipDownCards(firstCardE, cardElement);
   } else {
     flipUpOneCard(secondCard, cardElement, column, row);
     console.log('2nd card no match');
+    popUpMessage('no match!');
     // turn both cards back over
     flipDownCards(firstCardE, cardElement);
   }
@@ -185,7 +202,6 @@ const initGame = () => {
   document.body.appendChild(boardEl);
 
   // Add message element
-  const messageElement = document.createElement('div');
   messageElement.classList.add('message');
   document.body.appendChild(messageElement);
 };

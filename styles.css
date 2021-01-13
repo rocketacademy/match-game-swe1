@@ -19,6 +19,10 @@ body {
 }
 
 .message {
+  width: auto;
   text-align: center;
-  font-size: 1000px;
+  border-radius: 10px;
+  border-color: green;
+  color: white;
+  font-size: 200px;
 }
