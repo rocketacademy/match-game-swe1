@@ -23,7 +23,7 @@ body {
   font-family: Impact;
   padding: 10px;
   margin: 10px;
-  background-color: black;
+  background-color: coral;
   color: white;
   display: inline-block;
   height: 11px;
@@ -42,4 +42,12 @@ body {
   height: 50px;
   width: 220px;
   margin: 5px auto;
+}
+
+.output-msg {
+  color: coral;
+  font-family: Impact;
+  font-size: 30px;
+  text-align: center;
+  text-shadow: 2px 2px 4px #000000;
 }

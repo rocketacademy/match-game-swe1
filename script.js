@@ -1,4 +1,4 @@
-// Card Match Game V1
+// Card Match Game V2
 
 /* The user turns cards over one at a time to find
 the matching pair of two identical cards. */
@@ -9,6 +9,14 @@ const boardSize = 4; // Has to be an even number.
 let firstCard = null; // Will be assigned a Card object.
 let firstCardElement = null; // Will be assigned a <div> tag element representing card.
 let deck;
+
+const outputMatchMsg = () => {
+  const outputDiv = document.createElement('div');
+  outputDiv.classList.add('output-msg');
+  outputDiv.innerHTML = ' 🎉  GREAT YOU FOUND MATCHING CARDS!  🎉 ';
+
+  return outputDiv;
+};
 
 const openCloseCards = (previousCard, currentCard, clickedCard, matchCond = false) => {
   // Open cards
@@ -34,6 +42,14 @@ const openCloseCards = (previousCard, currentCard, clickedCard, matchCond = fals
     // Change the colors permantly when guessed correctly
     previousCard.className = 'cards-match'; // Eg. of previousCard: <div class="square">5</div>
     currentCard.className = 'cards-match';
+
+    // Output match message
+    const output = outputMatchMsg();
+    document.body.appendChild(output);
+
+    setTimeout(() => {
+      output.innerText = '';
+    }, 3000);
   }
 
   // Reset 1st card to null; When we call squareClick(), it will use its 1st condition (if applic.);
