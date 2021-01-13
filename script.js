@@ -1,10 +1,18 @@
 // Global declaration
 const board = []; // board will be the array of arrays
-const messageElement = document.createElement('div');
+const topMsgContainer = document.createElement('div');
+const gameMsgElement = document.createElement('div');
+const playerNameElement = document.createElement('div');
+const btnSubmit = document.createElement('button');
+const inputField = document.createElement('input');
+const outcomeMsgElement = document.createElement('div');
 let firstCard = null;
 let firstCardE = null;
+let gameMode = 'welcome';
+let playerName = '';
+let score = 0;
 const boardSize = 4;
-
+const gameTime = 4;
 let deck;
 
 // Function 1: Random index from array
@@ -83,8 +91,9 @@ const flipDownCards = (card1Element, card2Element) => {
   setTimeout(() => {
     card1Element.innerText = '';
     card2Element.innerText = '';
-  }, 3000);
+  }, 2000);
   firstCard = null;
+  firstCardE = null;
 };
 
 // Function 8: to flip up a single card
@@ -96,46 +105,74 @@ const flipUpOneCard = (cardObj, cardElement, col, row) => {
 
 // Function 9: Pop up message
 const popUpMessage = (message) => {
-  messageElement.innerText = '';
-  messageElement.innerText = message;
+  outcomeMsgElement.innerText = '';
+  outcomeMsgElement.style.opacity = '1';
+  outcomeMsgElement.style.fontSize = '100px';
+  outcomeMsgElement.innerText = message;
   if (message === 'match!') {
-    messageElement.style.backgroundColor = 'green';
+    outcomeMsgElement.style.backgroundColor = 'green';
   } else if (message === 'no match!') {
-    messageElement.style.backgroundColor = 'orange';
+    outcomeMsgElement.style.backgroundColor = 'orange';
   }
   setTimeout(() => {
-    messageElement.innerText = '';
+    outcomeMsgElement.innerText = '';
+    outcomeMsgElement.style.opacity = '0';
   }, 2000);
+};
+
+// Function 10: Game Prompt Messages
+const updateTopMsgBoard = () => {
+  playerNameElement.innerHTML = `${playerName} </br> Score: ${score}`;
+  gameMsgElement.innerHTML = '';
+
+  if (gameMode === 'choose1stCard') {
+    gameMsgElement.innerHTML = 'Choose your first card!';
+  } else if (gameMode === 'choose2ndCard') {
+    gameMsgElement.innerHTML = 'Choose your second card!';
+  } else if (gameMode === 'gameWin') {
+    gameMsgElement.innerHTML = 'Congratulations!';
+  } else if (gameMode === 'welcome') {
+    gameMsgElement.innerHTML = 'Submit your name to start!';
+    playerNameElement.innerHTML = '';
+  }
+
+  if (score == boardSize * boardSize) {
+    gameMode = 'gameWin';
+    popUpMessage('You won!');
+  }
 };
 
 // Function 4: when square clicked, check if cards match
 const squareClick = (cardElement, column, row) => {
-  console.log(cardElement);
   console.log(`column: ${column}`);
   console.log(`row: ${row}`);
-  console.log(`FIRST CARD: ${firstCard}`);
-  console.log(`CLICKED CARD: ${board[column][row]}`);
+
   const secondCard = null;
   // if first card
   if (firstCard === null) {
     firstCard = flipUpOneCard(firstCard, cardElement, column, row);
-
-    // firstCard = board[column][row];
-    // // turn this card over
-    // cardElement.innerText = firstCard.name;
+    gameMode = 'choose2ndCard';
+    updateTopMsgBoard();
     firstCardE = cardElement;
-  // if card name and suit matches
+    //
+    // 2nd card: if card names match
   } else if (board[column][row].name === firstCard.name) {
     flipUpOneCard(secondCard, cardElement, column, row);
-    console.log('match');
-    // turn both cards back over
+    firstCardE.style.backgroundColor = 'green';
+    cardElement.style.backgroundColor = 'green';
     popUpMessage('match!');
-    flipDownCards(firstCardE, cardElement);
+    score += 2;
+    gameMode = 'choose1stCard';
+    updateTopMsgBoard();
+    firstCard = null;
+    // flipDownCards(firstCardE, cardElement);
+    //
+    // 2nd card: if card names do not match
   } else {
     flipUpOneCard(secondCard, cardElement, column, row);
-    console.log('2nd card no match');
     popUpMessage('no match!');
-    // turn both cards back over
+    gameMode = 'choose1stCard';
+    updateTopMsgBoard();
     flipDownCards(firstCardE, cardElement);
   }
 };
@@ -185,6 +222,7 @@ const buildBoardElements = (board) => {
 const initGame = () => {
   // create this special deck by getting the doubled cards and
   // making a smaller array that is ( boardSize squared ) number of cards
+  score = 0;
   const doubleDeck = makeDeck();
   const deckSubset = doubleDeck.slice(0, boardSize * boardSize);
   deck = shuffleCards(deckSubset);
@@ -196,15 +234,43 @@ const initGame = () => {
       board[i].push(deck.pop());
     }
   }
-
+  // Add DOM elements
+  document.body.appendChild(inputField);
+  document.body.appendChild(btnSubmit);
+  document.body.appendChild(topMsgContainer);
+  topMsgContainer.appendChild(playerNameElement);
+  topMsgContainer.appendChild(gameMsgElement);
   const boardEl = buildBoardElements(board);
-
   document.body.appendChild(boardEl);
+  document.body.appendChild(outcomeMsgElement);
 
-  // Add message element
-  messageElement.classList.add('message');
-  document.body.appendChild(messageElement);
+  // Add classes to elements
+  topMsgContainer.classList.add('message');
+  inputField.classList.add('input');
+  btnSubmit.classList.add('button');
+  gameMsgElement.classList.add('message');
+  outcomeMsgElement.classList.add('message');
+  outcomeMsgElement.style.opacity = 0;
+  btnSubmit.innerHTML = 'Submit';
+
+  // Add events to elements
+  btnSubmit.addEventListener('click', () => {
+    playerName = inputField.value;
+    inputField.value = '';
+    console.log(playerName);
+    playerNameElement.innerHTML = playerName;
+    inputField.remove();
+    btnSubmit.remove();
+    gameMode = 'choose1stCard';
+    updateTopMsgBoard();
+  });
+
+  updateTopMsgBoard();
 };
 
 // Create game
 initGame();
+// popUpMessage('GAME START');
+// setTimeout(() => {
+//   popUpMessage('GAME END');
+// }, gameTime * 1000);
