@@ -1,3 +1,45 @@
 body {
   background-color: pink;
 }
+
+.main-board {
+  background-color: rgb(122, 40, 2);
+}
+
+.square {
+  font-family: Impact;
+  padding: 10px;
+  margin: 10px;
+  background-color: white;
+  display: inline-block;
+  height: 11px;
+  width: 11px;
+  vertical-align: top;
+  text-align: center;
+  border-style: ridge;
+}
+
+.cards-match {
+  font-family: Impact;
+  padding: 10px;
+  margin: 10px;
+  background-color: black;
+  color: white;
+  display: inline-block;
+  height: 11px;
+  width: 11px;
+  vertical-align: top;
+  text-align: center;
+  border-style: ridge;
+}
+
+.div {
+  background-color: grey;
+}
+
+.row {
+  background-color: greenyellow;
+  height: 50px;
+  width: 220px;
+  margin: 5px auto;
+}
