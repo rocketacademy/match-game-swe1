@@ -1,3 +1,6 @@
+// Set the game parameters
+const boardSize = 4;
+const gameTime = 30;
 // Global declaration
 const board = []; // board will be the array of arrays
 const gameHeaderElement = document.createElement('h1');
@@ -17,8 +20,6 @@ let gameMode = 'welcome';
 let playerName = '';
 let score = 0;
 let popUpTimeOut;
-const boardSize = 4;
-const gameTime = 4;
 let deck;
 
 // Function 1: Random index from array
@@ -177,8 +178,16 @@ const squareClick = (cardElement, column, row) => {
   console.log(`row: ${row}`);
 
   const secondCard = null;
-  // if first card
-  if (firstCard === null) {
+  // if card is not empty
+  if (cardElement.innerHTML !== '') {
+    if (firstCard !== null) {
+      firstCard = null;
+      firstCardE.innerHTML = '';
+    }
+    gameMode = 'choose1stCard';
+    updateTopMsgBoard();
+    // if first card
+  } else if (firstCard === null) {
     firstCard = flipUpOneCard(firstCard, cardElement, column, row);
     gameMode = 'choose2ndCard';
     updateTopMsgBoard();
