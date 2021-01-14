@@ -258,6 +258,11 @@ const initGame = () => {
   const deckSubset = doubleDeck.slice(0, boardSize * boardSize);
   deck = shuffleCards(deckSubset);
 
+  // Empty board array
+  for (let i = 0; i < boardSize; i += 1) {
+    board.pop();
+  }
+
   // deal the cards out to the board data structure
   for (let i = 0; i < boardSize; i += 1) {
     board.push([]);
