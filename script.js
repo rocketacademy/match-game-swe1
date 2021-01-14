@@ -1,16 +1,22 @@
 // Global declaration
 const board = []; // board will be the array of arrays
+const gameHeaderElement = document.createElement('h1');
 const topMsgContainer = document.createElement('div');
+const playerStatsContainer = document.createElement('div');
+const scoreElement = document.createElement('div');
+const timerElement = document.createElement('div');
 const gameMsgElement = document.createElement('div');
 const playerNameElement = document.createElement('div');
 const btnSubmit = document.createElement('button');
 const inputField = document.createElement('input');
+const btnReset = document.createElement('button');
 const outcomeMsgElement = document.createElement('div');
 let firstCard = null;
 let firstCardE = null;
 let gameMode = 'welcome';
 let playerName = '';
 let score = 0;
+let popUpTimeOut;
 const boardSize = 4;
 const gameTime = 4;
 let deck;
@@ -105,6 +111,7 @@ const flipUpOneCard = (cardObj, cardElement, col, row) => {
 
 // Function 9: Pop up message
 const popUpMessage = (message) => {
+  clearTimeout(popUpTimeOut);
   outcomeMsgElement.innerText = '';
   outcomeMsgElement.style.opacity = '1';
   outcomeMsgElement.style.fontSize = '100px';
@@ -114,7 +121,7 @@ const popUpMessage = (message) => {
   } else if (message === 'no match!') {
     outcomeMsgElement.style.backgroundColor = 'orange';
   }
-  setTimeout(() => {
+  popUpTimeOut = setTimeout(() => {
     outcomeMsgElement.innerText = '';
     outcomeMsgElement.style.opacity = '0';
   }, 2000);
@@ -122,7 +129,8 @@ const popUpMessage = (message) => {
 
 // Function 10: Game Prompt Messages
 const updateTopMsgBoard = () => {
-  playerNameElement.innerHTML = `${playerName} </br> Score: ${score}`;
+  playerNameElement.innerHTML = `<b>Player:</b> ${playerName}`;
+  scoreElement.innerHTML = `<b>Score:</b> ${score}`;
   gameMsgElement.innerHTML = '';
 
   if (gameMode === 'choose1stCard') {
@@ -134,12 +142,33 @@ const updateTopMsgBoard = () => {
   } else if (gameMode === 'welcome') {
     gameMsgElement.innerHTML = 'Submit your name to start!';
     playerNameElement.innerHTML = '';
+  } else if (gameMode === 'gameEnd') {
+    gameMsgElement.innerHTML = 'Click reset to play again';
   }
 
-  if (score == boardSize * boardSize) {
+  if (score === boardSize * boardSize) {
     gameMode = 'gameWin';
     popUpMessage('You won!');
   }
+};
+
+// Function 11: Flash pop up message
+const flashPopUpMsg = (message, flashCount) => {
+  let timeEndCounter = 0;
+  const timeEnd = setInterval(() => {
+    console.log(timeEndCounter);
+    if (timeEndCounter % 2 === 0) {
+      outcomeMsgElement.innerText = '';
+      outcomeMsgElement.style.opacity = '0';
+    } else {
+      console.log('on');
+      popUpMessage(message);
+    }
+    timeEndCounter += 1;
+    if (timeEndCounter > flashCount * 2) {
+      clearInterval(timeEnd);
+    }
+  }, 500);
 };
 
 // Function 4: when square clicked, check if cards match
@@ -181,6 +210,7 @@ const squareClick = (cardElement, column, row) => {
 const buildBoardElements = (board) => {
   // create the element that everything will go inside of
   const boardElement = document.createElement('div');
+  boardElement.innerHTML = '';
 
   // give it a class for CSS purposes
   boardElement.classList.add('board');
@@ -222,6 +252,7 @@ const buildBoardElements = (board) => {
 const initGame = () => {
   // create this special deck by getting the doubled cards and
   // making a smaller array that is ( boardSize squared ) number of cards
+  gameMode = 'welcome';
   score = 0;
   const doubleDeck = makeDeck();
   const deckSubset = doubleDeck.slice(0, boardSize * boardSize);
@@ -235,42 +266,74 @@ const initGame = () => {
     }
   }
   // Add DOM elements
+  document.body.innerHTML = '';
+  document.body.appendChild(gameHeaderElement);
   document.body.appendChild(inputField);
   document.body.appendChild(btnSubmit);
   document.body.appendChild(topMsgContainer);
-  topMsgContainer.appendChild(playerNameElement);
+  topMsgContainer.appendChild(playerStatsContainer);
+  playerStatsContainer.appendChild(playerNameElement);
+  playerStatsContainer.appendChild(scoreElement);
+  playerStatsContainer.appendChild(timerElement);
   topMsgContainer.appendChild(gameMsgElement);
   const boardEl = buildBoardElements(board);
   document.body.appendChild(boardEl);
   document.body.appendChild(outcomeMsgElement);
 
   // Add classes to elements
+  gameHeaderElement.classList.add('h1');
   topMsgContainer.classList.add('message');
+  playerStatsContainer.classList.add('row');
   inputField.classList.add('input');
   btnSubmit.classList.add('button');
+  btnReset.classList.add('button');
   gameMsgElement.classList.add('message');
   outcomeMsgElement.classList.add('message');
   outcomeMsgElement.style.opacity = 0;
+  gameHeaderElement.innerHTML = '🔥 Match Game 🔥';
   btnSubmit.innerHTML = 'Submit';
+  btnReset.innerHTML = 'Reset';
 
   // Add events to elements
   btnSubmit.addEventListener('click', () => {
+    // Clear value and update player name on playerStatsContainer
     playerName = inputField.value;
     inputField.value = '';
     console.log(playerName);
     playerNameElement.innerHTML = playerName;
+    // Clear the field and button
     inputField.remove();
     btnSubmit.remove();
+    // Set gamemode and update game message
     gameMode = 'choose1stCard';
     updateTopMsgBoard();
+    // Set timer
+    timerElement.innerHTML = `<b>Timer:</b> ${gameTime}`;
+    let counter = (gameTime - 1) * 1000;
+    const timer = setInterval(() => {
+      timerElement.innerHTML = `<b>Timer:</b> ${counter / 1000}`;
+      if (counter <= 0) {
+        clearInterval(timer);
+        flashPopUpMsg('Game End', 5);
+        gameMode = 'gameEnd';
+        updateTopMsgBoard();
+        // !!! BUG TO FIX: duplicate boardE1
+        topMsgContainer.appendChild(btnReset);
+        btnReset.addEventListener('click', () => {
+          initGame();
+          btnReset.remove();
+        });
+      }
+      counter -= 1000;
+    }, 1000);
   });
 
   updateTopMsgBoard();
+
+  // Initial previews
+  scoreElement.innerHTML = '';
+  timerElement.innerHTML = '';
 };
 
 // Create game
 initGame();
-// popUpMessage('GAME START');
-// setTimeout(() => {
-//   popUpMessage('GAME END');
-// }, gameTime * 1000);
