@@ -1,3 +1,23 @@
 body {
   background-color: pink;
+  text-align: center;
+}
+
+.square {
+  padding: 10px;
+  margin: 10px;
+  background-color: white;
+  display: inline-block;
+  height: 20px;
+  width: 20px;
+  vertical-align: top;
+}
+
+.banner {
+  background-color: rgb(188, 203, 201);
+  color: brown;
+  width: 30%;
+  height: 50px;
+  margin: 20px auto;
+  padding-top: 20px;
 }
