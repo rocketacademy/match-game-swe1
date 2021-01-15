@@ -2,16 +2,20 @@
 
 // declare global variables
 const board = [];
+let canClick = true;
 let firstCard = null;
-const secondCard = null;
+let secondCard = null;
 let firstCardElement = null;
-const secondCardElement = null;
+
 const boardSize = 4; // has to be an even number
 let cardInfo;
 
 let deck;
+let ref;
+let hours;
+let minutes;
+let seconds;
 
-//
 const getRandomIndex = (size) => Math.floor(Math.random() * size);
 
 // cards is an array of card objects
@@ -95,27 +99,62 @@ const makeDeck = () => {
   return newDeck;
 };
 
+// showing match message
+const showMatchMessage = () => {
+  const messageDiv = document.createElement('div');
+  messageDiv.classList.add('heading');
+  messageDiv.innerText = 'IT\'S A MATCH!!';
+  return messageDiv;
+};
+
 // function that executes when a card is clicked
 const squareClick = (cardElement, column, row) => {
+  const clickCard = board[column][row];
+
+  console.log('first card', firstCard);
+  console.log('click card', clickCard);
+  if (canClick === false) {
+    return;
+  }
+
   if (firstCard === null) {
-    firstCard = board[column][row];
+    firstCard = clickCard;
     console.log('first card turned over');
     firstCardElement = cardElement;
     // turn this card over
     cardElement.innerText = firstCard.name;
-  } else if (
-    board[column][row].name === firstCard.name
-    && board[column][row].suit === firstCard.suit
-  ) {
-    // turn this card over
-    console.log('match');
-    cardElement.innerText = board[column][row].name;
   } else {
-    firstCard = null;
-    console.log('no match');
-    firstCardElement.innerText = '';
-    firstCardElement = null;
+    secondCard = clickCard;
+    console.log('second card', secondCard);
+
+    if (secondCard.name === firstCard.name) {
+    // turn this card over
+      console.log('match');
+      console.log('second card', secondCard);
+
+      cardElement.innerText = secondCard.name;
+      console.log('click card', clickCard);
+
+      const output = showMatchMessage();
+      document.body.append(output);
+
+      setTimeout(() => {
+        output.remove();
+      }, 3000);
+    } else {
+      console.log('no match');
+      // firstCardElement.innerText = '';
+      cardElement.innerText = secondCard.name;
+      canClick = false;
+      setTimeout(() => {
+        console.log('hello');
+        cardElement.innerText = '';
+        firstCardElement.innerText = '';
+        canClick = true;
+      }, 2000);
     // turn this card back over
+    }
+    firstCard = null;
   }
 };
 
@@ -137,22 +176,95 @@ const buildBoardElements = (board) => {
       const square = document.createElement('div');
       square.classList.add('square');
       square.addEventListener('click', (event) => {
+        console.log('card element', event.currentTarget);
         squareClick(event.currentTarget, i, j);
       });
 
       rowElement.appendChild(square);
     }
+
     boardElement.appendChild(rowElement);
   }
   return boardElement;
 };
 
+const buildTimerElements = () => {
+  const timerContainer = document.createElement('div');
+  timerContainer.classList.add('container');
+  document.body.append(timerContainer);
+
+  const timerDisplay = document.createElement('div');
+  timerDisplay.classList.add('display');
+  timerDisplay.innerText = 'timer ready ';
+  timerContainer.appendChild(timerDisplay);
+
+  const resetButton = document.createElement('button');
+  resetButton.classList.add('button');
+  resetButton.innerText = 'RESET';
+  timerContainer.appendChild(resetButton);
+  resetButton.addEventListener('click', () => {
+    hours = 0;
+    minutes = 0;
+    seconds = 0;
+    timerDisplay.innerHTML = `${hours} hours<br> ${minutes} minutes<br> ${seconds} seconds`;
+  });
+
+  const startButton = document.createElement('button');
+  startButton.classList.add('button');
+  startButton.innerText = 'START';
+  timerContainer.appendChild(startButton);
+  startButton.addEventListener('click', () => {
+    setTimeout(() => {
+      timerDisplay.innerHTML = `${hours} hours<br> ${minutes} minutes<br> ${seconds} seconds`;
+    }, 2000);
+    const milliseconds = 0;
+    seconds = 0;
+    minutes = 0;
+    hours = 0;
+
+    const delayInMilliseconds = 1000;
+    ref = setInterval(() => {
+      timerDisplay.innerHTML = `${hours} hours<br> ${minutes} minutes<br> ${seconds} seconds`;
+      if (seconds > 58 && seconds % 60 === 0) {
+        minutes += 1;
+        seconds = 0;
+      }
+
+      if (minutes > 58 && minutes % 60 === 0) {
+        hours += 1;
+        minutes = 0;
+      }
+
+      if (minutes > 2) {
+        clearInterval(ref);
+      }
+      seconds += 1;
+    }, delayInMilliseconds);
+  });
+
+  const stopButton = document.createElement('button');
+  stopButton.classList.add('button');
+  stopButton.innerText = 'STOP';
+  timerContainer.appendChild(stopButton);
+  stopButton.addEventListener('click', () => {
+    clearInterval(ref);
+  });
+
+  return timerContainer;
+};
+
 const initGame = () => {
+  const pageHeading = document.createElement('h2');
+  pageHeading.classList.add('heading');
+  pageHeading.innerHTML = 'SWE 1<br>MATCH GAME';
+  document.body.appendChild(pageHeading);
+
   // using the deck we made before, with double the number of cards
   const doubleDeck = makeDeck();
   // getting the number of cards needed to make up the board i.e 4 * 4
   const deckSubset = doubleDeck.slice(0, boardSize * boardSize);
-  deck = shuffleCards(deckSubset);
+  // deck = shuffleCards(deckSubset);
+  deck = deckSubset;
 
   for (let i = 0; i < boardSize; i += 1) {
     // generate 4 empty arrays within variable board (which is an empty array itself)
@@ -165,6 +277,9 @@ const initGame = () => {
   }
   const boardEl = buildBoardElements(board);
   document.body.appendChild(boardEl);
+
+  const timerEl = buildTimerElements();
+  document.body.appendChild(timerEl);
 };
 
 initGame();
