@@ -1,3 +1,78 @@
 body {
   background-color: pink;
 }
+
+#header {
+  font-family: "Amatic SC", cursive;
+  font-size: 4.5em;
+  text-align: center;
+}
+
+.main-board {
+  background-color: rgb(1, 138, 8);
+  padding-left: 33.3%;
+  border-style: outset;
+  border-color: brown;
+  border-radius: 12px;
+  margin: 0px auto;
+}
+
+.square {
+  font-family: Impact;
+  padding: 10px;
+  margin: 10px;
+  background-color: white;
+  display: inline-block;
+  height: 11px;
+  width: 11px;
+  vertical-align: top;
+  text-align: center;
+  border-style: ridge;
+}
+
+.cards-match {
+  font-family: Impact;
+  padding: 10px;
+  margin: 10px;
+  background-color: coral;
+  color: white;
+  display: inline-block;
+  height: 11px;
+  width: 11px;
+  vertical-align: top;
+  text-align: center;
+  border-style: ridge;
+}
+.row {
+  background-color: rgb(1, 138, 8);
+  margin: 5px auto;
+}
+
+.match-msg {
+  color: rgb(251, 85, 24);
+  font-family: "Amatic SC", cursive;
+  font-size: 50px;
+  text-align: center;
+  text-shadow: 1px 1px 1px #000000;
+}
+
+.win-msg {
+  color: gold;
+  font-family: Impact;
+  font-size: 65px;
+  text-align: center;
+  text-shadow: 2px 2px 2px #000000;
+}
+
+.reset-button {
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: 0.1rem;
+  color: white;
+  background-color: orangered;
+  border-radius: 20px;
+  display: block;
+  margin: 10px auto;
+  padding: 10px 40px;
+  border-style: dotted;
+}
