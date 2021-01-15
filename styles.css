@@ -21,3 +21,16 @@ body {
   margin: 20px auto;
   padding-top: 20px;
 }
+
+.scoreBoard {
+  background-color: turquoise;
+  width: 30%;
+  height: 50px;
+  margin: 20px auto;
+}
+
+input {
+  margin: 5px;
+  display: block;
+  margin: 10px auto;
+}
