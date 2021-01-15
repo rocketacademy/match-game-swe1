@@ -2,8 +2,19 @@ body {
   background-color: pink;
 }
 
+#header {
+  font-family: "Amatic SC", cursive;
+  font-size: 4.5em;
+  text-align: center;
+}
+
 .main-board {
-  background-color: rgb(122, 40, 2);
+  background-color: rgb(1, 138, 8);
+  padding-left: 33.3%;
+  border-style: outset;
+  border-color: brown;
+  border-radius: 12px;
+  margin: 0px auto;
 }
 
 .square {
@@ -32,22 +43,36 @@ body {
   text-align: center;
   border-style: ridge;
 }
-
-.div {
-  background-color: grey;
-}
-
 .row {
-  background-color: greenyellow;
-  height: 50px;
-  width: 220px;
+  background-color: rgb(1, 138, 8);
   margin: 5px auto;
 }
 
-.output-msg {
-  color: coral;
-  font-family: Impact;
-  font-size: 30px;
+.match-msg {
+  color: rgb(251, 85, 24);
+  font-family: "Amatic SC", cursive;
+  font-size: 50px;
   text-align: center;
-  text-shadow: 2px 2px 4px #000000;
+  text-shadow: 1px 1px 1px #000000;
+}
+
+.win-msg {
+  color: gold;
+  font-family: Impact;
+  font-size: 65px;
+  text-align: center;
+  text-shadow: 2px 2px 2px #000000;
+}
+
+.reset-button {
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: 0.1rem;
+  color: white;
+  background-color: orangered;
+  border-radius: 20px;
+  display: block;
+  margin: 10px auto;
+  padding: 10px 40px;
+  border-style: dotted;
 }

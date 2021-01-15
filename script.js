@@ -1,84 +1,102 @@
-// Card Match Game V2
+// Card Match Game V3
 
 /* The user turns cards over one at a time to find
 the matching pair of two identical cards. */
 
 // Global Variables
+let deck;
 const board = [];
 const boardSize = 4; // Has to be an even number.
 let firstCard = null; // Will be assigned a Card object.
 let firstCardElement = null; // Will be assigned a <div> tag element representing card.
-let deck;
+let secondCard = null;
 
-const outputMatchMsg = () => {
+// Included for V3
+let playerPoints = 0;
+const MAX_POINTS = (boardSize * boardSize) / 2;
+const MATCHING_MESSAGE = ' 🎉  GREAT YOU FOUND MATCHING CARDS!  🎉 ';
+const WINNING_MESSAGE = 'WINNER! YOU MATCHED EVERYTHING!! 🎖';
+
+const outputMatchMsg = (message, cssClass) => {
   const outputDiv = document.createElement('div');
-  outputDiv.classList.add('output-msg');
-  outputDiv.innerHTML = ' 🎉  GREAT YOU FOUND MATCHING CARDS!  🎉 ';
+  outputDiv.classList.add(cssClass);
+  outputDiv.innerHTML = message;
 
   return outputDiv;
 };
 
-const openCloseCards = (previousCard, currentCard, clickedCard, matchCond = false) => {
-  // Open cards
-  setTimeout(() => {
-    currentCard.innerText = clickedCard.name;
-  }, 50);
+const buttonElement = () => {
+  const button = document.createElement('button');
+  button.innerHTML = 'PLAY AGAIN?';
+  button.classList.add('reset-button');
+  document.body.appendChild(button);
 
-  // Turn over cards if match condition is false.
-  if (matchCond === false) {
-    setTimeout(() => {
-      previousCard.innerText = ''; // previousCard is a HTML element, Creates an "innerText" key for the firstCard Object
-      currentCard.innerText = '';
-    }, 900);
-  } else {
-    // If true, leave cards open & change color.
-    firstCard.innerText = previousCard.name; // Eg. of firstCard: {name: "5", suit: "hearts", rank: 5, innerText: undefined}
-    currentCard.innerText = clickedCard.name; // Eg. of currentCard: <div class="square">5</div>
+  button.addEventListener('click', () => {
+    window.location.reload(true);
+  });
 
-    console.log('firstCard', firstCard);
-    console.log('currentCard', currentCard);
-    console.log('previousCard', previousCard);
-
-    // Change the colors permantly when guessed correctly
-    previousCard.className = 'cards-match'; // Eg. of previousCard: <div class="square">5</div>
-    currentCard.className = 'cards-match';
-
-    // Output match message
-    const output = outputMatchMsg();
-    document.body.appendChild(output);
-
-    setTimeout(() => {
-      output.innerText = '';
-    }, 3000);
-  }
-
-  // Reset 1st card to null; When we call squareClick(), it will use its 1st condition (if applic.);
-  firstCard = null;
+  return button;
 };
 
 // Callback function that will be attached to each Square of the Board.
 const squareClick = (cardElement, column, row) => {
   const clickedCard = board[column][row]; // This is a Card object.
 
-  console.log('FIRST CARD: ', firstCard);
-  console.log('CLEEKED Card', clickedCard);
-  console.log('--------------');
-
-  // Set up first card (& resets every 2 clicks).
+  // Set firstCard as the clickedCard (this resets every 2 clicks).
   if (firstCard === null) {
     firstCard = clickedCard;
-    cardElement.innerText = firstCard.name; // Example of cardElement: <div class="square">5</div>
     firstCardElement = cardElement;
-  // If the cards match
-  } else if (firstCard.name === clickedCard.name) {
-    console.log('CARDS MATCH!');
-    console.log('--------------');
-    // true condition set to leave matched cards open.
-    openCloseCards(firstCardElement, cardElement, clickedCard, true);
+    // Turn card over.
+    cardElement.innerText = firstCard.name; // Example of cardElement: <div class="square">5</div>
+    console.log('First Card: ', firstCard);
+  // Set secondCard as the clickedCard
   } else {
-    console.log('CARDS N0 MATCH!');
-    console.log('--------------');
-    openCloseCards(firstCardElement, cardElement, clickedCard);
+    secondCard = clickedCard;
+    if (secondCard.name === firstCard.name) {
+      playerPoints += 1;
+      console.log('MATCHED');
+
+      // Reveal second card (assign secondCard's name to event.target)
+      cardElement.innerText = secondCard.name;
+
+      // Change the colors permantly when guessed correctly.
+      firstCardElement.className = 'cards-match';
+      cardElement.className = 'cards-match';
+
+      // Output MATCH message.
+      if (playerPoints !== MAX_POINTS) {
+        const output = outputMatchMsg(MATCHING_MESSAGE, 'match-msg');
+        document.body.appendChild(output);
+
+        setTimeout(() => {
+          output.innerText = '';
+        }, 3000);
+      } else if (playerPoints === MAX_POINTS) {
+        // Output winning message when last click of game happens
+        const output = outputMatchMsg(WINNING_MESSAGE, 'win-msg');
+        document.body.appendChild(output);
+        setTimeout(() => {
+          output.innerText = '';
+        }, 5000);
+
+        // Include Reset Button
+        setTimeout(() => {
+          buttonElement();
+        }, 5010);
+      }
+    } else {
+      console.log('NOT MATCHED');
+      // Reveal second card
+      cardElement.innerText = secondCard.name;
+
+      // Since cards don't match, proceed to turn them face down after 2 sec.
+      setTimeout(() => {
+        cardElement.innerText = '';
+        firstCardElement.innerText = '';
+      }, 2000);
+    }
+    // Reset firstCard to null; this enters squareClick()'s first condition
+    firstCard = null;
   }
 };
 
@@ -189,7 +207,8 @@ const initGame = () => {
   const deckSubset = doubleDeck.slice(0, boardSize * boardSize);
 
   // Shuffle this extracted subset of cards (containing duplicates).
-  deck = shuffleCards(deckSubset);
+  // deck = shuffleCards(deckSubset);
+  deck = deckSubset;
 
   // Deal cards out to the Board data structure.
   for (let i = 0; i < boardSize; i += 1) {
@@ -200,6 +219,7 @@ const initGame = () => {
       board[i].push(deck.pop());
     }
   }
+
   // Render the 4x4 grid of cards populated in the double for-loop to the DOM.
   const boardEle = buildBoardElements(board);
   document.body.appendChild(boardEle);
