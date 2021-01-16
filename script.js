@@ -1,4 +1,4 @@
-// Card Match Game V3
+// Card Match Game V4
 
 /* The user turns cards over one at a time to find
 the matching pair of two identical cards. */
@@ -16,6 +16,11 @@ let playerPoints = 0;
 const MAX_POINTS = (boardSize * boardSize) / 2;
 const MATCHING_MESSAGE = ' 🎉  GREAT YOU FOUND MATCHING CARDS!  🎉 ';
 const WINNING_MESSAGE = 'WINNER! YOU MATCHED EVERYTHING!! 🎖';
+
+// Included for V4
+let canClick = true;
+const START_MESSAGE = 'YOU HAVE 1 MIN TO FIND ALL PAIRS!⏱';
+const ENTER_NAME_MESSAGE = 'TIME STARTS AFTER NAME IS KEYED IN..';
 
 const outputMatchMsg = (message, cssClass) => {
   const outputDiv = document.createElement('div');
@@ -41,6 +46,10 @@ const buttonElement = () => {
 // Callback function that will be attached to each Square of the Board.
 const squareClick = (cardElement, column, row) => {
   const clickedCard = board[column][row]; // This is a Card object.
+
+  if (canClick === false) {
+    return;
+  }
 
   // Set firstCard as the clickedCard (this resets every 2 clicks).
   if (firstCard === null) {
@@ -88,11 +97,13 @@ const squareClick = (cardElement, column, row) => {
       console.log('NOT MATCHED');
       // Reveal second card
       cardElement.innerText = secondCard.name;
-
+      // Disallow player to click before turning cards face down;
+      canClick = false;
       // Since cards don't match, proceed to turn them face down after 2 sec.
       setTimeout(() => {
         cardElement.innerText = '';
         firstCardElement.innerText = '';
+        canClick = true;
       }, 2000);
     }
     // Reset firstCard to null; this enters squareClick()'s first condition
@@ -104,7 +115,7 @@ const squareClick = (cardElement, column, row) => {
 const buildBoardElements = (populatedBoard) => {
   // Create <div> element where everything will be stored
   const boardElement = document.createElement('div');
-  boardElement.classList.add('main-board'); // Applied Brown shade to it
+  boardElement.classList.add('board');
 
   // Use board data structure we passed in to create correct size board
   for (let i = 0; i < populatedBoard.length; i += 1) {
@@ -113,7 +124,7 @@ const buildBoardElements = (populatedBoard) => {
 
     // Create a <div> element for this row of cards
     const rowElement = document.createElement('div');
-    rowElement.classList.add('row'); // Added a green shade to differentiate
+    rowElement.classList.add('row');
 
     // Make all the squares for each row
     for (let j = 0; j < row.length; j += 1) {
@@ -125,8 +136,11 @@ const buildBoardElements = (populatedBoard) => {
       squareCard.addEventListener('click', (event) => {
         // Whatever card selected, apply squareClick() function to it.
         const cardElement = event.currentTarget; // Example output: <div class="square">5</div>
-        // squareClick()
-        squareClick(cardElement, i, j);
+        if (event.detail === 1) {
+          squareClick(cardElement, i, j);
+        } else {
+          console.log('Double-clicked.');
+        }
       });
       // Render each squareCard element to the DOM.
       rowElement.appendChild(squareCard);
@@ -200,6 +214,51 @@ const makeDeck = () => {
 
 // Initialise Game
 const initGame = () => {
+  const gameInfo = document.createElement('div');
+  gameInfo.classList.add('game-info');
+  document.body.appendChild(gameInfo);
+
+  const playerInfo = document.createElement('p');
+  playerInfo.classList.add('player-info');
+
+  const startMsg = outputMatchMsg(START_MESSAGE, 'start-msg');
+  const enterName = outputMatchMsg(ENTER_NAME_MESSAGE, 'start-msg');
+
+  // Create input & button
+  const inputElement = document.createElement('input');
+  inputElement.id = 'input-name';
+  const submitButton = document.createElement('button');
+  submitButton.id = 'submit-button';
+  submitButton.innerText = 'SUBMIT';
+
+  // Add eventListener to submit button to get name
+  submitButton.addEventListener('click', () => {
+    const name = document.getElementById('input-name').value;
+    gameInfo.innerHTML = `WELCOME ${name}! `;
+  });
+
+  let counter = 0;
+  const delay = 4000;
+  const startRef = setInterval(() => {
+    if (counter === 0) {
+      gameInfo.appendChild(startMsg);
+    }
+
+    counter += 1;
+
+    if (counter === 3) {
+      startMsg.remove();
+      gameInfo.appendChild(enterName);
+    }
+
+    if (counter > 5) {
+      enterName.remove();
+      gameInfo.appendChild(inputElement);
+      gameInfo.appendChild(submitButton);
+      clearInterval(startRef);
+    }
+  }, delay);
+
   // Create a 104-card deck (2x decks combined, i.e. 52 + 52).
   const doubleDeck = makeDeck();
 
@@ -207,8 +266,7 @@ const initGame = () => {
   const deckSubset = doubleDeck.slice(0, boardSize * boardSize);
 
   // Shuffle this extracted subset of cards (containing duplicates).
-  // deck = shuffleCards(deckSubset);
-  deck = deckSubset;
+  deck = shuffleCards(deckSubset);
 
   // Deal cards out to the Board data structure.
   for (let i = 0; i < boardSize; i += 1) {
