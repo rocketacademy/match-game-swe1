@@ -3,9 +3,11 @@
 const boardSize = 4;
 const board = [];
 let firstCard = null;
+let secondCard='';
 let firstCardElement;
 let deck;
-
+const gameInfo=document.createElement('p')
+document.body.appendChild(gameInfo)
 
 
 const squareClick = (cardElement, column, row) => {
@@ -16,37 +18,41 @@ const squareClick = (cardElement, column, row) => {
   if (firstCard === null) {
     firstCard = board[column][row];
     // turn this card over
-    cardElement.innerText = firstCard.name;
+    cardElement.innerText = `${firstCard.name},${firstCard.suit}`;
 
     // hold onto this for later when it may not match
     firstCardElement = cardElement;  //correspond to line 34 where you can flip back the first card
   } else if (
-    board[column][row].name === firstCard.name &&
-    board[column][row].suit === firstCard.suit
+    board[column][row].name === firstCard.name 
+    && board[column][row].suit === firstCard.suit
   ) {
     console.log('match');
 
     // turn this card over and print card name on the square
-    cardElement.innerText = board[column][row].name;
+    cardElement.innerText = `${board[column][row].name},${board[column][row].suit}`;
     //code added in by me so that numbers clicked will continue to be displayed for both cards and not just the first card
-    const resetStates =()=>{
-      firstCard = null;
+    firstCard = null;
+    gameInfo.innerText='It is a match'
+    setTimeout(function(){gameInfo.innerText=''},3000)
 
-    }
-    setTimeout(resetStates(),1000)
   } else {
     console.log('NOT a match');
-    firstCard = null;
+    secondCard= board[column][row];
+    cardElement.innerText=`${secondCard.name},${secondCard.suit}`;
 
-    // turn this card back over
-    firstCardElement.innerText = '';
+    const flipCards = () =>{
+      firstCard=null;
+      firstCardElement.innerText='';
+      cardElement.innerText=''
+    }
+    setTimeout(flipCards,3000);
   }
 };
 
 const makeDeck = () => {
   // create the empty deck at the beginning
   const newDeck = [];
-  const suits = ['hearts', 'diamonds', 'clubs', 'spades'];
+  const suits = ['♥', '♢', '♣', '♠'];
 
   for (let suitIndex = 0; suitIndex < suits.length; suitIndex += 1) {
     // make a variable of the current suit
@@ -145,6 +151,7 @@ const shuffleCards =(deck) =>{
 const initGame = () => {
   // create this special deck by getting the doubled cards and
   // making a smaller array that is ( boardSize squared ) number of cards
+  setTimeout(function(){gameInfo.innerText='Time is Up'},180000);
   let doubleDeck = makeDeck();
   let deckSubset = doubleDeck.slice(0, boardSize * boardSize);
   deck = shuffleCards(deckSubset);
