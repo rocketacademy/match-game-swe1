@@ -6,8 +6,34 @@
   </head>
 
   <body>
-    <h1 id="header">SWE101! 🚀</h1>
-    <!-- Import program logic -->
+    <div class="reset-container">
+      <small class="reset-button">RESET GAME</small>
+    </div>
+    <main class="main-container">
+      <div class="heading">
+        <h1 id="header">Match Game 🚀</h1>
+        <p class="player-name"></p>
+      </div>
+      <section class="main-play-area">
+        <!-- Import program logic -->
+        <div id="root"></div>
+        <div class="welcome-msg">
+          <h2>Welcome to Match Game!</h2>
+          <p>Goal of this game is to pick and match cards on the screen</p>
+        </div>
+        <div class="enter-name">
+          <h2>Enter Name</h2>
+          <input id="player-input" type="text" />
+        </div>
+        <div class="start-game">
+          <button class="start-button">Start Game</button>
+        </div>
+      </section>
+    </main>
     <script src="script.js"></script>
+    <script src="buildBoard.js"></script>
+    <script src="makeDeck.js"></script>
+    <script src="shuffleCards.js"></script>
+    <script src="initGame.js"></script>
   </body>
 </html>
