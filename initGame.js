@@ -4,6 +4,13 @@
 const root = document.getElementById("root");
 
 const initGame = () => {
+  // Get welcome Message and start button
+  const startButton = document.querySelector(".start-button");
+  const welcomeMsg = document.querySelector(".welcome-msg");
+  // Hide Welcome message && button
+  startButton.style.display = "none";
+  welcomeMsg.style.display = "none";
+
   // create this special deck by getting the doubled cards and
   // making a smaller array that is ( boardSize squared ) number of cards
   let doubleDeck = makeDeck();
@@ -26,4 +33,4 @@ const initGame = () => {
 
   root.appendChild(boardEl);
 };
-initGame();
+// initGame();

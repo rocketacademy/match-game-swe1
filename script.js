@@ -16,6 +16,28 @@ const flipCard = (squareContainer, squareInner) => {
   }, 1500);
 };
 
+// Match Message Fucntion
+const matchMsg = () => {
+  // Get the root element to append message
+  const root = document.getElementById("root");
+  const msgDiv = document.createElement("div");
+  msgDiv.classList.add("msg-div");
+  const msgHeader = document.createElement("h3");
+  msgHeader.innerText = "MATCH! Well done!";
+  msgDiv.appendChild(msgHeader);
+  root.insertAdjacentElement("beforebegin", msgDiv);
+
+  setTimeout(() => {
+    msgDiv.style.display = "none";
+  }, 3000);
+};
+
+// Start Game
+const startButton = document.querySelector(".start-button");
+startButton.addEventListener("click", (e) => {
+  initGame();
+});
+
 //  ********* GAMEPLAY LOGIC *********
 const squareClick = (
   squareBackName,
@@ -25,24 +47,28 @@ const squareClick = (
   column,
   row
 ) => {
-  console.log("THIS IS squareBackName", squareBackName);
+  console.log("FIRST CARD ELEMENT ->>>", firstCardElement);
+  console.log("THIS IS squareBackName", squareBackName.innerText);
   console.log("THIS IS squareBackSuit", squareBackSuit);
   console.log("FIRST CARD DOM ELEMENT", firstCard);
   console.log("BOARD CLICKED CARD", board[column][row]);
   console.log("Weird boardcol", board[column][row]);
   if (firstCard === null) {
+    // This equals an object of one card
     firstCard = board[column][row];
 
     squareBackName.innerText = firstCard.name;
+    squareBackSuit.innerText = firstCard.suit;
 
     // hold onto this for later when it may not match
-    firstCardElement = squareBackName;
-    flipCard(squareContainer, squareInner);
+    firstCardElement = board[column][row];
+    // flipCard(squareContainer, squareInner);
   } else if (
     board[column][row].name === firstCard.name &&
     board[column][row].suit === firstCard.suit
   ) {
     console.log("match");
+    matchMsg();
 
     // turn this card over
     squareBackName.innerText = board[column][row].name;
@@ -53,7 +79,8 @@ const squareClick = (
     console.log("NOT a match");
     firstCard = null;
 
-    firstCardElement.innerText = "";
+    // firstCardElement.innerText = "";
+    firstCardElement = "";
     flipCard(squareContainer, squareInner);
   }
 };

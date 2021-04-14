@@ -27,6 +27,7 @@ const buildBoardElements = (board) => {
       const squareBack = document.createElement("div");
       const squareBackName = document.createElement("p");
       const squareBackSuit = document.createElement("p");
+
       // set a class for CSS purposes
       square.classList.add("square");
       squareInner.classList.add("square-inner");
@@ -34,6 +35,7 @@ const buildBoardElements = (board) => {
       squareBack.classList.add("square-back");
       squareBackName.classList.add("square-back-name");
       squareBackSuit.classList.add("square-back-suit");
+
       // set the click event
       // eslint-disable-next-line
       square.addEventListener("click", (event) => {
@@ -53,6 +55,7 @@ const buildBoardElements = (board) => {
       square.appendChild(squareInner);
       rowElement.appendChild(square);
     }
+
     boardElement.appendChild(rowElement);
   }
 
