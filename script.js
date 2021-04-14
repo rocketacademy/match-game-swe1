@@ -6,6 +6,26 @@ let firstCard = null;
 let firstCardElement;
 let deck;
 
+// Variables for timer funciton
+let timeInMiliseconds = 10000;
+const delayInMiliseconds = 1;
+
+// const timerSetForGame = setInterval(() => {
+//   console.log("Timer StaRTED");
+//   setTimeout(() => {
+//     console.log("Reload");
+//     showMsgFunc("Your time has ended. Goodbye!", "red");
+//   }, 5000);
+//   const timerInHTML = document.querySelector(".show-timer");
+//   timerInHTML.innerText = timeInMiliseconds;
+//   if (timeInMiliseconds <= 0) {
+//     clearInterval(timerSetForGame);
+//     location.reload();
+//   }
+
+//   timeInMiliseconds -= 1;
+// }, delayInMiliseconds);
+
 // Timer Fucntion
 const timerSetForGame = () => {
   console.log("Timer StaRTED");
@@ -48,12 +68,14 @@ const showMsgFunc = (msg, color) => {
 // Start Game / Enter name funciton
 const startButton = document.querySelector(".start-button");
 startButton.addEventListener("click", (e) => {
+  const nameOutput = document.querySelector(".enter-name");
   // GET PARAGRAPH TAG TO INSERT NAME && INPUT VALUE
   const paraName = document.querySelector(".player-name");
   const playerInputValue = document.getElementById("player-input").value;
   playerInputValue
     ? (paraName.innerHTML = ` Hello ${playerInputValue}!`)
     : (paraName.innerHTML = "Hello! Let's begin!");
+  nameOutput.style.display = "none";
 
   initGame();
   timerSetForGame();
