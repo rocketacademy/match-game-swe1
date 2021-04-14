@@ -50,13 +50,14 @@ const showMsgFunc = (msg, color) => {
 // Start Game / Enter name funciton
 const startButton = document.querySelector(".start-button");
 startButton.addEventListener("click", (e) => {
+  const nameOutput = document.querySelector(".enter-name");
   // GET PARAGRAPH TAG TO INSERT NAME && INPUT VALUE
   const paraName = document.querySelector(".player-name");
   const playerInputValue = document.getElementById("player-input").value;
   playerInputValue
     ? (paraName.innerHTML = ` Hello ${playerInputValue}!`)
     : (paraName.innerHTML = "Hello! Let's begin!");
-
+  nameOutput.style.display = "none";
   initGame();
   timerSetForGame();
 });
