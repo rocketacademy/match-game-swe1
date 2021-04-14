@@ -11,6 +11,7 @@ const timerSetForGame = () => {
   console.log("Timer StaRTED");
   setTimeout(() => {
     console.log("Reload");
+    showMsgFunc("Your time has ended. Goodbye!", "red");
   }, 5000);
   setInterval(() => {
     location.reload();
@@ -32,6 +33,7 @@ const showMsgFunc = (msg, color) => {
   // Get the root element to append message
   const root = document.getElementById("root");
   const msgDiv = document.createElement("div");
+  msgDiv.style.zIndex = 100;
   msgDiv.classList.add("msg-div");
 
   const msgHeader = document.createElement("h3");
