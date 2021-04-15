@@ -27,7 +27,6 @@ const delayInMiliseconds = 1;
 // }, delayInMiliseconds);
 
 // Timer Fucntion
-<<<<<<< HEAD
 // const timerSetForGame = () => {
 //   console.log("Timer StaRTED");
 //   setTimeout(() => {
@@ -38,18 +37,6 @@ const delayInMiliseconds = 1;
 //     location.reload();
 //   }, 10000);
 // };
-=======
-const timerSetForGame = () => {
-  console.log("Timer StaRTED");
-  setTimeout(() => {
-    console.log("Reload");
-    showMsgFunc("Your time has ended. Goodbye!", "red");
-  }, 5000);
-  setInterval(() => {
-    location.reload();
-  }, 10000);
-};
->>>>>>> b340a10ebc42b3a19b4d75c3e713fe5e8340cd9d
 
 // Flip Card Function
 const flipCard = (squareContainer, squareInner) => {
@@ -82,10 +69,7 @@ const showMsgFunc = (msg, color) => {
 const startButton = document.querySelector(".start-button");
 startButton.addEventListener("click", (e) => {
   const nameOutput = document.querySelector(".enter-name");
-<<<<<<< HEAD
   const stopWatchContainer = document.getElementById("stopwatch-container");
-=======
->>>>>>> b340a10ebc42b3a19b4d75c3e713fe5e8340cd9d
   // GET PARAGRAPH TAG TO INSERT NAME && INPUT VALUE
   const paraName = document.querySelector(".player-name");
   const playerInputValue = document.getElementById("player-input").value;
@@ -95,10 +79,6 @@ startButton.addEventListener("click", (e) => {
     ? (paraName.innerHTML = ` Hello ${playerInputValue}!`)
     : (paraName.innerHTML = "Hello! Let's begin!");
   nameOutput.style.display = "none";
-<<<<<<< HEAD
-
-=======
->>>>>>> b340a10ebc42b3a19b4d75c3e713fe5e8340cd9d
   initGame();
   // THIS WAS MY IMPLEMENTED TIMER FUNCTION
   // timerSetForGame();
