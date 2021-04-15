@@ -6,27 +6,34 @@ let firstCard = null;
 let secondCard = "";
 let firstCardElement;
 let deck;
+const timer = document.createElement("p");
+document.body.appendChild(timer);
 const gameInfo = document.createElement("p");
 document.body.appendChild(gameInfo);
-
+let canClick = true;
+let cardsLeft = boardSize * boardSize;
 const squareClick = (cardElement, column, row) => {
   console.log(cardElement);
   console.log("FIRST CARD DOM ELEMENT", firstCard);
   console.log("BOARD CLICKED CARD", board[column][row]);
 
-  if (firstCard === null) {
+  // FIRST CLICK
+  if (firstCard === null && canClick) {
     firstCard = board[column][row];
     // turn this card over
     cardElement.innerText = `${firstCard.name},${firstCard.suit}`;
 
     // hold onto this for later when it may not match
     firstCardElement = cardElement; //correspond to line 34 where you can flip back the first card
+    console.log(canClick);
+
+    // SECOND CLICK
   } else if (
+    canClick &&
     board[column][row].name === firstCard.name &&
     board[column][row].suit === firstCard.suit
   ) {
     console.log("match");
-
     // turn this card over and print card name on the square
     cardElement.innerText = `${board[column][row].name},${board[column][row].suit}`;
     //code added in by me so that numbers clicked will continue to be displayed for both cards and not just the first card
@@ -35,16 +42,25 @@ const squareClick = (cardElement, column, row) => {
     setTimeout(function () {
       gameInfo.innerText = "";
     }, 3000);
-  } else {
+    console.log(canClick);
+    cardsLeft = cardsLeft - 2;
+  } else if (canClick) {
     console.log("NOT a match");
+    canClick = false;
     secondCard = board[column][row];
     cardElement.innerText = `${secondCard.name},${secondCard.suit}`;
     firstCard = null;
     const flipCards = () => {
+      canClick = true;
       firstCardElement.innerText = "";
       cardElement.innerText = "";
     };
     setTimeout(flipCards, 3000);
+    console.log(canClick);
+  }
+  if (cardsLeft === 0) {
+    clearInterval(timerCountDown);
+    timer.innerText = "Congrats, You Won";
   }
 };
 
@@ -147,17 +163,27 @@ const shuffleCards = (deck) => {
   }
   return deck;
 };
+let timerCountDown = null;
 const initGame = () => {
   // create this special deck by getting the doubled cards and
   // making a smaller array that is ( boardSize squared ) number of cards
-  setTimeout(function () {
-    gameInfo.innerText = "Time is Up";
-  }, 180000);
+  let currentTime = 20;
+  timerCountDown = setInterval(() => {
+    currentTime = currentTime - 1;
+    timer.innerText = `Seconds Left: ${currentTime}`;
+    if (currentTime === 0) {
+      timer.innerText = `Time's Up, You Lose`;
+      clearInterval(timerCountDown);
+      const squares = document.querySelectorAll(".square");
+      for (i = 0; i < squares.length; i++) {
+        squares[i].innerHTML = "";
+      }
+    }
+  }, 1000);
   let doubleDeck = makeDeck();
   let deckSubset = doubleDeck.slice(0, boardSize * boardSize);
   deck = shuffleCards(deckSubset);
   console.log(deck);
-
   // deal the cards out to the board data structure
   for (let i = 0; i < boardSize; i += 1) {
     board.push([]);
