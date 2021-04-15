@@ -158,9 +158,11 @@ const buildBoardElements = (board) => {
 
 // Function takes in the card position in the board & card object,
 // creates element to store the card-name and card-suit
-const displayCardElement = (cardElement, cardInfo) => {
+// add class name to the display card element so i can call on it later to be turned over
+const displayCardElement = (cardElement, cardInfo, className) => {
   const cardRevealDiv = document.createElement("div");
   cardRevealDiv.classList.add("card-reveal");
+  cardRevealDiv.classList.add(className);
 
   // Creating the element for storing the card display name
   // 2 Class names are applicable "name, <color>"
@@ -177,8 +179,7 @@ const displayCardElement = (cardElement, cardInfo) => {
   // The parent cardRevealDiv holds both the display name and suit symbol
   cardRevealDiv.appendChild(divNameElement);
   cardRevealDiv.appendChild(divSuitElement);
-  console.log(cardRevealDiv);
-  // Class name = "card"
+
   // This element represents a whole single card
   cardElement.innerHTML = "";
   cardElement.appendChild(cardRevealDiv);
@@ -191,9 +192,10 @@ const displayCardElement = (cardElement, cardInfo) => {
 // leaves is on display, don't turn the card back down
 const changeMatchedCardsDisplay = (cardObj) => {
   // since div now exists (after displayCardElement function), I can pick it again
-  cardNameDiv = document.querySelector(".card-name");
+  const cardNameDiv = document.querySelector(".card-name");
   cardNameDiv.innerHTML = "🎉";
-  cardSuitDiv = document.querySelector(".card-suit");
+
+  const cardSuitDiv = document.querySelector(".card-suit");
   cardSuitDiv.innerHTML = "👏";
   cardObj.matched = true;
 };
@@ -208,58 +210,84 @@ let canClick = true;
 // cardElement ==> currently clicked square element for the card
 // When card element is clicked (column & row = location of the card on the board)
 const squareClick = (cardElement, column, row) => {
-  //
+  const currentCard = boardOfCards[column][row];
+  console.log(cardElement);
+
+  // the user cannot do anything if we set canClick to false
   if (canClick === false) {
     return;
   }
 
-  const currentCard = boardOfCards[column][row];
-  // When the first card is not empty and it is not the same card
-  if (firstCard !== null) {
-    canClick = false;
+  // When we have the first card already and we click on the same card
+  if (firstCard !== null && currentCard.matched === true) {
+    canClick = true;
+    console.log(`you can't click on the same card`);
   }
 
-  // only 2 cards are considered for matching
+  // We don't have a first card yet
   if (firstCard === null) {
-    // first card is chosen to be the current card
+    // First card is chosen to be the current card
     firstCard = currentCard;
-    // turn this card over by displaying the text
-    displayCardElement(cardElement, firstCard);
-    // cardElement.innerText = firstCard.name;
+    console.log(`first card is `, firstCard);
+    // mark the first card as matched (although we do this again in changeMatchedCardsDisplay, it's to prevent the user from clicking on itself)
+    firstCard.matched = true;
 
     // hold onto this for later when it may not match
-    firstCardElement = cardElement;
+    // firstCardElement = cardElement;
+
+    // turn this card over by displaying the text, leave it open for 3000 milliseconds
+    displayCardElement(cardElement, firstCard, "first-card");
     instructions.innerHTML = "Pick another card.";
+
+    // When we are considering two cards for matching, leave the first card to be open for 3 seconds
+    // it will automatically disappear if the second card doesnt match
+    setTimeout(() => {
+      // turn this card back over
+      const firstCardRevealDiv = document.querySelector(".first-card");
+      firstCardRevealDiv.style.display = "none";
+      console.log(`the first card disappears`);
+      console.log(`first card inside here is `, firstCard);
+    }, 3000);
   }
+
   // Conditions for matching
   else if (
-    // any clicked on card
     currentCard.name === firstCard.name &&
     currentCard.suit === firstCard.suit
   ) {
     // turn this card over & create the divs
-    displayCardElement(cardElement, firstCard);
-    displayCardElement(cardElement, currentCard);
+    // leave the cards are revealed
+    displayCardElement(cardElement, currentCard, "second-card");
     changeMatchedCardsDisplay(firstCard);
     changeMatchedCardsDisplay(currentCard);
+    console.log("i matched using ", firstCard, "currentCard");
 
     instructions.innerHTML = "🎉 You found a pair!";
+    // Allow the user to continue the game
     canClick = true;
+    // reset the first card to null again, because i am going to look for a new pair
     firstCard = null;
+
+    // We have the first card already
   } else {
+    // show the card that has just been clicked, two cards are open now
+    displayCardElement(cardElement, currentCard, "second-card");
+    console.log(currentCard, `does not match first card`);
+
+    // we disable clicking before the second card disappears
+    canClick = false;
+
     // If the 2 selected cards are not matching
     instructions.innerHTML = "Try again 💫";
-    /*
-    When the user clicks a square for a second time,
-    turn the card over and if it doesn't match the first card,
-    show it to the user for 3 seconds then turn it back over.
-    */
-    displayCardElement(cardElement, currentCard);
-    cardElement.innerHTML = "";
-    firstCard = null;
-    // turn this card back over
-    firstCardElement.innerHTML = "";
-    canClick = true;
+
+    // After second card has been picked (currentCard), we leave 1 second to display before we turn it back over
+    setTimeout(() => {
+      const secondCardRevealDiv = document.querySelector(".second-card");
+      secondCardRevealDiv.style.display = "none";
+      canClick = true;
+      firstCard = null;
+      console.log(`the cards don't match and delay has happened`);
+    }, 1000);
   }
 };
 
@@ -280,7 +308,6 @@ const startGame = () => {
       boardOfCards[i].push(deck.pop());
     }
   }
-  // call the
   boardElement = buildBoardElements(boardOfCards);
   return boardElement;
 };
