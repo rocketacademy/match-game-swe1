@@ -39,7 +39,6 @@ const makeDeck = () => {
     const currentSuit = suits[suitIndex][0];
     const currentSuitSymbol = suits[suitIndex][1];
     const currentCardColor = suits[suitIndex][2];
-    // console.log(`current suit: ${currentSuit}`);
 
     // loop to create all cards in this suit
     // rank 1-13
@@ -107,6 +106,7 @@ let gameStarted = false;
 const initGame = () => {
   // User hasn't keyed in the name yet
   // if gameStarted is false
+  inputDiv.style.display = "flex";
   if (!gameStarted) {
     gameControlsDiv.style.display = "none";
     boardTag.style.display = "none";
@@ -156,7 +156,8 @@ const buildBoardElements = (board) => {
   return boardTag;
 };
 
-// Function takes in the card position in the board & card object
+// Function takes in the card position in the board & card object,
+// creates element to store the card-name and card-suit
 const displayCardElement = (cardElement, cardInfo) => {
   const cardRevealDiv = document.createElement("div");
   cardRevealDiv.classList.add("card-reveal");
@@ -176,7 +177,7 @@ const displayCardElement = (cardElement, cardInfo) => {
   // The parent cardRevealDiv holds both the display name and suit symbol
   cardRevealDiv.appendChild(divNameElement);
   cardRevealDiv.appendChild(divSuitElement);
-
+  console.log(cardRevealDiv);
   // Class name = "card"
   // This element represents a whole single card
   cardElement.innerHTML = "";
@@ -185,18 +186,16 @@ const displayCardElement = (cardElement, cardInfo) => {
   return cardElement;
 };
 
-// takes card object and shows that cards have been matched
-const changeMatchedCardsDisplay = (firstCardEl, secondCardEl) => {
-  const firstCardElName = firstCardEl.name;
-  console.log("first card el name is " + firstCardElName);
-  const firstCardElSuit = firstCardEl.suit;
-  const secondCardElName = secondCardEl.name;
-  const secondCardElSuit = secondCardEl.suit;
-
-  firstCardElName.innerHTML = "🎉";
-  firstCardElSuit.innerHTML = "🎉";
-  secondCardElName.innerHTML = "🎉";
-  secondCardElSuit.innerHTML = "🎉";
+// takes card object and shows that card have been matched
+// changes the card to "matched = true" so that users cannot click on it again
+// leaves is on display, don't turn the card back down
+const changeMatchedCardsDisplay = (cardObj) => {
+  // since div now exists (after displayCardElement function), I can pick it again
+  cardNameDiv = document.querySelector(".card-name");
+  cardNameDiv.innerHTML = "🎉";
+  cardSuitDiv = document.querySelector(".card-suit");
+  cardSuitDiv.innerHTML = "👏";
+  cardObj.matched = true;
 };
 
 // store card element of the first card
@@ -209,12 +208,13 @@ let canClick = true;
 // cardElement ==> currently clicked square element for the card
 // When card element is clicked (column & row = location of the card on the board)
 const squareClick = (cardElement, column, row) => {
+  //
   if (canClick === false) {
     return;
   }
 
   const currentCard = boardOfCards[column][row];
-  // When the first card is not empty,
+  // When the first card is not empty and it is not the same card
   if (firstCard !== null) {
     canClick = false;
   }
@@ -237,9 +237,12 @@ const squareClick = (cardElement, column, row) => {
     currentCard.name === firstCard.name &&
     currentCard.suit === firstCard.suit
   ) {
-    // turn this card over
-    // displayCardElement(cardElement, currentCard);
-    changeMatchedCardsDisplay(firstCard, currentCard);
+    // turn this card over & create the divs
+    displayCardElement(cardElement, firstCard);
+    displayCardElement(cardElement, currentCard);
+    changeMatchedCardsDisplay(firstCard);
+    changeMatchedCardsDisplay(currentCard);
+
     instructions.innerHTML = "🎉 You found a pair!";
     canClick = true;
     firstCard = null;
@@ -316,9 +319,11 @@ endBtnTag.addEventListener("click", () => {
   endBtnTag.style.display = "none";
   startBtnTag.style.display = "none";
   replayBtnTag.style.display = "block";
-  instructions.innerHTML = `Sorry to see you go, ${playerName}!`;
+  instructions.innerHTML = `Sorry to see you go, ${playerName}!<br>`;
 });
 
 replayBtnTag.addEventListener("click", () => {
+  console.log("game will replay");
+  instructions.innerHTML = `What's your name, new player?`;
   initGame();
 });
