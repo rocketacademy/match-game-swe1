@@ -3,17 +3,16 @@
 const boardSize = 4;
 const board = [];
 let firstCard = null;
-let secondCard='';
+let secondCard = "";
 let firstCardElement;
 let deck;
-const gameInfo=document.createElement('p')
-document.body.appendChild(gameInfo)
-
+const gameInfo = document.createElement("p");
+document.body.appendChild(gameInfo);
 
 const squareClick = (cardElement, column, row) => {
   console.log(cardElement);
-  console.log('FIRST CARD DOM ELEMENT', firstCard);
-  console.log('BOARD CLICKED CARD', board[column][row]);
+  console.log("FIRST CARD DOM ELEMENT", firstCard);
+  console.log("BOARD CLICKED CARD", board[column][row]);
 
   if (firstCard === null) {
     firstCard = board[column][row];
@@ -21,38 +20,38 @@ const squareClick = (cardElement, column, row) => {
     cardElement.innerText = `${firstCard.name},${firstCard.suit}`;
 
     // hold onto this for later when it may not match
-    firstCardElement = cardElement;  //correspond to line 34 where you can flip back the first card
+    firstCardElement = cardElement; //correspond to line 34 where you can flip back the first card
   } else if (
-    board[column][row].name === firstCard.name 
-    && board[column][row].suit === firstCard.suit
+    board[column][row].name === firstCard.name &&
+    board[column][row].suit === firstCard.suit
   ) {
-    console.log('match');
+    console.log("match");
 
     // turn this card over and print card name on the square
     cardElement.innerText = `${board[column][row].name},${board[column][row].suit}`;
     //code added in by me so that numbers clicked will continue to be displayed for both cards and not just the first card
     firstCard = null;
-    gameInfo.innerText='It is a match'
-    setTimeout(function(){gameInfo.innerText=''},3000)
-
+    gameInfo.innerText = "It is a match";
+    setTimeout(function () {
+      gameInfo.innerText = "";
+    }, 3000);
   } else {
-    console.log('NOT a match');
-    secondCard= board[column][row];
-    cardElement.innerText=`${secondCard.name},${secondCard.suit}`;
-
-    const flipCards = () =>{
-      firstCard=null;
-      firstCardElement.innerText='';
-      cardElement.innerText=''
-    }
-    setTimeout(flipCards,3000);
+    console.log("NOT a match");
+    secondCard = board[column][row];
+    cardElement.innerText = `${secondCard.name},${secondCard.suit}`;
+    firstCard = null;
+    const flipCards = () => {
+      firstCardElement.innerText = "";
+      cardElement.innerText = "";
+    };
+    setTimeout(flipCards, 3000);
   }
 };
 
 const makeDeck = () => {
   // create the empty deck at the beginning
   const newDeck = [];
-  const suits = ['♥', '♢', '♣', '♠'];
+  const suits = ["♥", "♢", "♣", "♠"];
 
   for (let suitIndex = 0; suitIndex < suits.length; suitIndex += 1) {
     // make a variable of the current suit
@@ -66,14 +65,14 @@ const makeDeck = () => {
       let cardName = `${rankCounter}`;
 
       // 1, 11, 12 ,13
-      if (cardName === '1') {
-        cardName = 'ace';
-      } else if (cardName === '11') {
-        cardName = 'jack';
-      } else if (cardName === '12') {
-        cardName = 'queen';
-      } else if (cardName === '13') {
-        cardName = 'king';
+      if (cardName === "1") {
+        cardName = "ace";
+      } else if (cardName === "11") {
+        cardName = "jack";
+      } else if (cardName === "12") {
+        cardName = "queen";
+      } else if (cardName === "13") {
+        cardName = "king";
       }
 
       // make a single card object variable
@@ -98,10 +97,10 @@ const makeDeck = () => {
 // return the built board
 const buildBoardElements = (board) => {
   // create the element that everything will go inside of
-  const boardElement = document.createElement('div');
+  const boardElement = document.createElement("div");
 
   // give it a class for CSS purposes
-  boardElement.classList.add('board');
+  boardElement.classList.add("board");
 
   // use the board data structure we passed in to create the correct size board
   for (let i = 0; i < board.length; i += 1) {
@@ -109,20 +108,20 @@ const buildBoardElements = (board) => {
     const row = board[i];
 
     // make an element for this row of cards
-    const rowElement = document.createElement('div');
-    rowElement.classList.add('row');
+    const rowElement = document.createElement("div");
+    rowElement.classList.add("row");
 
     // make all the squares for this row
     for (let j = 0; j < row.length; j += 1) {
       // create the square element
-      const square = document.createElement('div');
+      const square = document.createElement("div");
 
       // set a class for CSS purposes
-      square.classList.add('square');
+      square.classList.add("square");
 
       // set the click event
       // eslint-disable-next-line
-      square.addEventListener('click', (event) => {
+      square.addEventListener("click", (event) => {
         // we will want to pass in the card element so
         // that we can change how it looks on screen, i.e.,
         // "turn the card over"
@@ -137,25 +136,27 @@ const buildBoardElements = (board) => {
   return boardElement;
 };
 
-const shuffleCards =(deck) =>{
-  numberOfCards = deck.length
-  for (i=0;i<deck.length;i++){
-    const randomIndex=Math.floor(Math.random()*numberOfCards);
-    const originalCard = deck[i]
-    const newCard = deck[randomIndex]
-    deck[i]=newCard
-    deck[randomIndex]=originalCard
+const shuffleCards = (deck) => {
+  numberOfCards = deck.length;
+  for (i = 0; i < deck.length; i++) {
+    const randomIndex = Math.floor(Math.random() * numberOfCards);
+    const originalCard = deck[i];
+    const newCard = deck[randomIndex];
+    deck[i] = newCard;
+    deck[randomIndex] = originalCard;
   }
-  return deck
-}
+  return deck;
+};
 const initGame = () => {
   // create this special deck by getting the doubled cards and
   // making a smaller array that is ( boardSize squared ) number of cards
-  setTimeout(function(){gameInfo.innerText='Time is Up'},180000);
+  setTimeout(function () {
+    gameInfo.innerText = "Time is Up";
+  }, 180000);
   let doubleDeck = makeDeck();
   let deckSubset = doubleDeck.slice(0, boardSize * boardSize);
   deck = shuffleCards(deckSubset);
-  console.log(deck)
+  console.log(deck);
 
   // deal the cards out to the board data structure
   for (let i = 0; i < boardSize; i += 1) {
@@ -164,7 +165,7 @@ const initGame = () => {
       board[i].push(deck.pop());
     }
   }
-  console.log(board)
+  console.log(board);
   const boardEl = buildBoardElements(board);
 
   document.body.appendChild(boardEl);
