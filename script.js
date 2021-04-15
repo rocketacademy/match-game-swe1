@@ -27,16 +27,16 @@ const delayInMiliseconds = 1;
 // }, delayInMiliseconds);
 
 // Timer Fucntion
-const timerSetForGame = () => {
-  console.log("Timer StaRTED");
-  setTimeout(() => {
-    console.log("Reload");
-    showMsgFunc("Your time has ended. Goodbye!", "red");
-  }, 5000);
-  setInterval(() => {
-    location.reload();
-  }, 10000);
-};
+// const timerSetForGame = () => {
+//   console.log("Timer StaRTED");
+//   setTimeout(() => {
+//     console.log("Reload");
+//     showMsgFunc("Your time has ended. Goodbye!", "red");
+//   }, 5000);
+//   setInterval(() => {
+//     location.reload();
+//   }, 10000);
+// };
 
 // Flip Card Function
 const flipCard = (squareContainer, squareInner) => {
@@ -69,16 +69,20 @@ const showMsgFunc = (msg, color) => {
 const startButton = document.querySelector(".start-button");
 startButton.addEventListener("click", (e) => {
   const nameOutput = document.querySelector(".enter-name");
+  const stopWatchContainer = document.getElementById("stopwatch-container");
   // GET PARAGRAPH TAG TO INSERT NAME && INPUT VALUE
   const paraName = document.querySelector(".player-name");
   const playerInputValue = document.getElementById("player-input").value;
+
+  stopWatchContainer.style.display = "block";
   playerInputValue
     ? (paraName.innerHTML = ` Hello ${playerInputValue}!`)
     : (paraName.innerHTML = "Hello! Let's begin!");
   nameOutput.style.display = "none";
 
   initGame();
-  timerSetForGame();
+  // THIS WAS MY IMPLEMENTED TIMER FUNCTION
+  // timerSetForGame();
 });
 
 // RESET GAME BUTTON
@@ -86,6 +90,8 @@ startButton.addEventListener("click", (e) => {
 const resetButton = document.querySelector(".reset-button");
 const mainContainer = document.querySelector(".main-container");
 resetButton.addEventListener("click", (e) => {
+  const stopWatchContainer = document.getElementById("stopwatch-container");
+  stopWatchContainer.style.display = "block";
   mainContainer.style.display = "none";
   resetButton.style.display = "none";
   showMsgFunc("You are about to leave game!", "red");

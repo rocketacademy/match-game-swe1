@@ -10,6 +10,46 @@
       <small class="reset-button">RESET GAME</small>
       <small class="show-timer"></small>
     </div>
+    <div id="stopwatch-container">
+      <div id="timer-container">
+        <div id="lap-data-container">
+          <div id="lap-data">
+            <h3>Lap Data</h3>
+            <ul id="lap-list">
+              <li>dummy</li>
+            </ul>
+          </div>
+        </div>
+        <div id="timer-button-container">
+          <div id="elapse-time">
+            <h3 class="elapse-title">Show Time</h3>
+            <div id="display-timer-container">
+              <span>Hour<span id="show-hour"></span></span>
+              <span>Minute<span id="show-minute"></span></span>
+              <span>Seconds<span id="show-seconds"></span></span>
+            </div>
+          </div>
+          <div id="timer-buttons">
+            <div id="start-stop-container">
+              <span id="start" class="stopwatch-buttons">
+                <p class="start-btn">Start</p>
+              </span>
+              <span id="stop" class="stopwatch-buttons">
+                <p class="stop-btn">Stop</p>
+              </span>
+            </div>
+            <div id="reset-lap-container">
+              <span id="reset" class="stopwatch-buttons">
+                <p class="reset-btn">Reset</p>
+              </span>
+              <span id="lap" class="stopwatch-buttons">
+                <p class="lap-btn">Lap</p>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <main class="main-container">
       <div class="heading">
         <h1 id="header">Match Game 🚀</h1>
@@ -32,6 +72,7 @@
       </section>
     </main>
     <script src="script.js"></script>
+    <script src="timer.js"></script>
     <script src="buildBoard.js"></script>
     <script src="makeDeck.js"></script>
     <script src="shuffleCards.js"></script>

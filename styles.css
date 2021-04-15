@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Zen+Dots&display=swap");
+
 /* GLOBAL STYLES */
 * {
   box-sizing: border-box;
@@ -14,6 +16,7 @@ body {
     rgba(0, 212, 255, 1) 100%
   );
   color: #fff;
+  font-family: "Zen Dots", cursive;
 }
 
 h1,
@@ -37,6 +40,11 @@ h2 {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+/* STOPWATCH CONTAINER */
+#stopwatch-container {
+  display: none;
 }
 
 /*******  PLAYER NAME *******/
@@ -149,4 +157,118 @@ h2 {
 /* ****** CLASS GIVEN AFTER USER CLICKS ****** */
 .clicked {
   transform: rotateY(180deg);
+}
+
+/******* TIMER COMPONENT *******/
+
+/****** MAIN CONTAINER STYLES ******/
+
+#timer-container {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  padding: 10px 12px;
+  margin: 0 auto;
+  border-radius: 12px;
+  background: rgb(245, 144, 26);
+  background: -moz-linear-gradient(
+    90deg,
+    rgba(245, 144, 26, 1) 0%,
+    rgba(166, 137, 104, 1) 100%,
+    rgba(252, 176, 69, 1) 100%
+  );
+  background: -webkit-linear-gradient(
+    90deg,
+    rgba(245, 144, 26, 1) 0%,
+    rgba(166, 137, 104, 1) 100%,
+    rgba(252, 176, 69, 1) 100%
+  );
+  background: linear-gradient(
+    90deg,
+    rgba(245, 144, 26, 1) 0%,
+    rgba(166, 137, 104, 1) 100%,
+    rgba(252, 176, 69, 1) 100%
+  );
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#f5901a",endColorstr="#fcb045",GradientType=1);
+  width: 50%;
+  height: 50%;
+  border: 2px solid red;
+}
+
+/****** LAP STYLES ******/
+
+#lap-data-container {
+  background-color: blue;
+  padding: 8px 8px 90px 8px;
+  margin: 8px;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  border: 2px solid blue;
+  text-align: center;
+}
+
+#lap-list {
+  list-style: none;
+}
+
+/****** TIMER BUTTONS CONTAINER ******/
+#timer-button-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/****** TIMER BUTTONS ******/
+#timer-buttons {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+#start-stop-container,
+#reset-lap-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+#timer-buttons {
+  display: flex;
+  justify-content: space-around;
+}
+
+#elapse-time {
+  width: 100%;
+  padding: 10px;
+  margin: 8px;
+  text-align: center;
+  background-color: teal;
+  border-radius: 12px;
+}
+
+#display-timer-container {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.stopwatch-buttons {
+  width: 100%;
+  text-align: center;
+  margin: 4px 4px;
+  cursor: pointer;
+  background-color: yellow;
+  padding: 5px;
+  border-radius: 10px;
+}
+#show-hour,
+#show-minute,
+#show-seconds {
+  display: block;
+  color: #e93d00;
 }
