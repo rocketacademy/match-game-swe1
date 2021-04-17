@@ -129,7 +129,6 @@ const squareClick = (cardElement, column, row) => {
 const buildBoardElements = (board) => {
   // create the element that everything will go inside of
   const boardElement = document.createElement('div');
-
   // give it a class for CSS purposes
   boardElement.classList.add('board');
 
@@ -188,3 +187,6 @@ const initGame = () => {
 };
 
 initGame();
+setInterval(() => {
+  window.location.reload();
+}, 180000);
