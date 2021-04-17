@@ -69,12 +69,35 @@ function showMatchMessage() {
   }, 3000);
   matchDiv.innerText = 'match found!!!';
 }
+
+function greetingMessage() {
+  const name = prompt("Hi, What's your name?", 'there');
+  const greeting = document.createElement('h1');
+  document.body.appendChild(greeting);
+  greeting.innerHTML = `Hi, ${name}!`;
+}
+
+function gameReset() {
+  const resetButton = document.createElement('button');
+  resetButton.innerText = 'Game Reset';
+  document.body.appendChild(resetButton);
+  resetButton.addEventListener('click', () => {
+    window.location.reload();
+  });
+}
+
+function displayNumOfWins(wins) {
+  const winningCount = document.createElement('h3');
+  winningCount.innerText = `total ${wins} number of wins so far.`;
+  document.body.appendChild(winningCount);
+}
 // boardSize has to be an even number
 const boardSize = 4;
 const board = [];
 let firstCard = null;
 let firstCardElement;
 let deck;
+let numOfWins = 0;
 
 const squareClick = (cardElement, column, row) => {
   console.log(cardElement);
@@ -108,6 +131,9 @@ const squareClick = (cardElement, column, row) => {
         && clickedCard.suit === firstCard.suit
     ) {
       console.log('match');
+      numOfWins += 1;
+      console.log(`${numOfWins} number of wins so far`);
+      if (numOfWins > 0) { displayNumOfWins(numOfWins); }
 
       // turn this card over
       cardElement.innerText = clickedCard.name;
@@ -167,6 +193,7 @@ const buildBoardElements = (board) => {
 };
 
 const initGame = () => {
+  greetingMessage();
   // create this special deck by getting the doubled cards and
   // making a smaller array that is ( boardSize squared ) number of cards
   const doubleDeck = makeDeck();
@@ -184,6 +211,8 @@ const initGame = () => {
   const boardEl = buildBoardElements(board);
 
   document.body.appendChild(boardEl);
+
+  gameReset();
 };
 
 initGame();
