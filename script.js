@@ -103,6 +103,7 @@ let firstCard = null;
 let firstCardElement;
 let deck;
 let numOfWins = 0;
+let downCounter = 60000;
 
 const squareClick = (cardElement, column, row) => {
   console.log(cardElement);
@@ -223,6 +224,15 @@ const initGame = () => {
 };
 
 initGame();
-setInterval(() => {
-  window.location.reload();
-}, 180000);
+// setInterval(() => {
+//   window.location.reload();
+// }, 180000);
+
+const timer = setInterval(() => {
+  downCounter -= 1000;
+  console.log(`${downCounter} milli seconds is remaining`);
+  if (downCounter <= 0) {
+    // clearInterval(timer);
+    window.location.reload();
+  }
+}, 1000);
