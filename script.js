@@ -27,7 +27,6 @@ const makeDeck = () => {
   for (let suitIndex = 0; suitIndex < suits.length; suitIndex += 1) {
     // make a variable of the current suit
     const currentSuit = suits[suitIndex];
-    console.log(`current suit: ${currentSuit}`);
 
     // loop to create all cards in this suit
     // rank 1-13
@@ -52,8 +51,6 @@ const makeDeck = () => {
         suit: currentSuit,
         rank: rankCounter,
       };
-
-      console.log(`rank: ${rankCounter}`);
 
       // add the card to the deck
       newDeck.push(card); // add double the cards to the deck
@@ -110,6 +107,7 @@ const squareClick = (cardElement, column, row) => {
 
       // turn this card back over
       firstCardElement.innerText = '';
+      setTimeout(() => { cardElement.innerText = ''; }, 3000);
     }
 
     // reset the first card
