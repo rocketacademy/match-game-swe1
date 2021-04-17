@@ -60,6 +60,15 @@ const makeDeck = () => {
 
   return newDeck;
 };
+
+function showMatchMessage() {
+  const matchDiv = document.createElement('p');
+  document.body.appendChild(matchDiv);
+  setTimeout(() => {
+    matchDiv.innerText = '';
+  }, 3000);
+  matchDiv.innerText = 'match found!!!';
+}
 // boardSize has to be an even number
 const boardSize = 4;
 const board = [];
@@ -102,6 +111,7 @@ const squareClick = (cardElement, column, row) => {
 
       // turn this card over
       cardElement.innerText = clickedCard.name;
+      showMatchMessage();
     } else {
       console.log('NOT a match');
 
