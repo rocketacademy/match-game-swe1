@@ -88,8 +88,13 @@ function gameReset() {
 
 function displayNumOfWins(wins) {
   const winningCount = document.createElement('h3');
-  winningCount.innerText = `total ${wins} number of wins so far.`;
   document.body.appendChild(winningCount);
+  if (wins === 13) {
+    winningCount.innerText = `This is SPECIAL Message for total ${wins} wins.`;
+  }
+  else {
+    winningCount.innerText = `total ${wins} number of wins so far.`;
+  }
 }
 // boardSize has to be an even number
 const boardSize = 4;
@@ -133,7 +138,9 @@ const squareClick = (cardElement, column, row) => {
       console.log('match');
       numOfWins += 1;
       console.log(`${numOfWins} number of wins so far`);
-      if (numOfWins > 0) { displayNumOfWins(numOfWins); }
+      if (numOfWins > 0) {
+        displayNumOfWins(numOfWins);
+      }
 
       // turn this card over
       cardElement.innerText = clickedCard.name;
