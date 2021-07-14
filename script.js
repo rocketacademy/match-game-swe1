@@ -12,11 +12,14 @@ let deck;
 // Boolean handler for timeout to prevent subsequent clicks
 // while showing both unmatched cards
 let canClick = true;
-// initialize timeout variables
+// Time to complete the game
+const timer = 180;
+// initialize timeout and interval variables
 let displayMatchMessageTimeout;
+let timerInterval;
 
 /*
-** NAMED TIMEOUT FUNCTIONS
+** NAMED TIMEOUT FUNCTIONS AND HELPERS
 **
 */
 
@@ -42,6 +45,20 @@ const handleMatchMessage = (card) => {
   displayMatchMessageTimeout = setTimeout(() => {
     hideMatchMessages();
   }, 3000);
+};
+
+const handleTimerInterval = (timerEl, timeLeft) => {
+  clearInterval(timerInterval);
+
+  setInterval(() => {
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      timerEl.innerText = 'Time is up!';
+    } else {
+      timeLeft -= 1;
+      timerEl.innerText = `${timeLeft} seconds remaining!`;
+    }
+  }, 1000);
 };
 
 /**
@@ -249,6 +266,11 @@ const initGame = () => {
   const boardEl = buildBoardElements(GAMEBOARD);
 
   document.body.appendChild(boardEl);
+
+  const timerParagraph = document.createElement('p');
+  timerParagraph.innerText = `${timer} seconds remaining!`;
+  document.body.insertBefore(timerParagraph, boardEl);
+  handleTimerInterval(timerParagraph, timer);
 };
 
 initGame();
