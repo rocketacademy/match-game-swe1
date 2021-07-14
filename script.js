@@ -13,7 +13,7 @@ let deck;
 // while showing both unmatched cards
 let canClick = true;
 // Time to complete the game
-const timer = 180;
+let timer = 180;
 // initialize timeout and interval variables
 let displayMatchMessageTimeout;
 let timerInterval;
@@ -47,16 +47,17 @@ const handleMatchMessage = (card) => {
   }, 3000);
 };
 
-const handleTimerInterval = (timerEl, timeLeft) => {
+const initTimer = (timerEl) => {
   clearInterval(timerInterval);
 
   setInterval(() => {
-    if (timeLeft <= 0) {
+    if (timer <= 0) {
       clearInterval(timerInterval);
       timerEl.innerText = 'Time is up!';
+      canClick = false;
     } else {
-      timeLeft -= 1;
-      timerEl.innerText = `${timeLeft} seconds remaining!`;
+      timer -= 1;
+      timerEl.innerText = `${timer} seconds remaining!`;
     }
   }, 1000);
 };
@@ -106,7 +107,7 @@ const squareClick = (cardElement, column, row) => {
   }
 
   // first turn
-  if (firstCard === null) {
+  if (firstCard === null && canClick) {
     console.log('first turn');
     firstCard = clickedCard;
     // turn this card over
@@ -270,7 +271,7 @@ const initGame = () => {
   const timerParagraph = document.createElement('p');
   timerParagraph.innerText = `${timer} seconds remaining!`;
   document.body.insertBefore(timerParagraph, boardEl);
-  handleTimerInterval(timerParagraph, timer);
+  initTimer(timerParagraph);
 };
 
 initGame();
