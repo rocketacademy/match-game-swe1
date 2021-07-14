@@ -9,6 +9,9 @@ const GAMEBOARD = [];
 let firstCard = null;
 let firstCardElement;
 let deck;
+// Boolean handler for timeout to prevent subsequent clicks
+// while showing both unmatched cards
+let canClick = true;
 
 /**
  * HELPER FUNCTIONS
@@ -49,7 +52,8 @@ const squareClick = (cardElement, column, row) => {
   const clickedCard = GAMEBOARD[column][row];
 
   // the user already clicked on this square
-  if (cardElement.innerText !== '') {
+  // or canClick is false (timeout for closing cards not up)
+  if (cardElement.innerText !== '' || !canClick) {
     return;
   }
 
@@ -76,13 +80,17 @@ const squareClick = (cardElement, column, row) => {
       cardElement.innerText = clickedCard.name;
     } else {
       console.log('NOT a match');
-
+      // prevent user from clicking additional cards
+      // while both unmatched cards are showing
+      canClick = false;
       cardElement.innerText = clickedCard.name;
 
       setTimeout(() => {
         // turn both cards back over
         firstCardElement.innerText = '';
         cardElement.innerText = '';
+        // set canClick back to true
+        canClick = true;
       }, 1000);
     }
 
