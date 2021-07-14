@@ -12,9 +12,40 @@ let deck;
 // Boolean handler for timeout to prevent subsequent clicks
 // while showing both unmatched cards
 let canClick = true;
+// initialize timeout variables
+let displayMatchMessageTimeout;
+
+/*
+** NAMED TIMEOUT FUNCTIONS
+**
+*/
+
+const hideMatchMessages = () => {
+  const matchMessageInstances = document.querySelectorAll('.matchMessage');
+
+  for (let i = 0; i < matchMessageInstances.length; i += 1) {
+    matchMessageInstances[i].remove();
+  }
+};
+
+const showMatchMessage = () => {
+  const matchMessageParagraph = document.createElement('p');
+  matchMessageParagraph.className += 'matchMessage match-message';
+  matchMessageParagraph.innerText = 'Matched cards!';
+  document.body.appendChild(matchMessageParagraph);
+};
+
+const handleMatchMessage = () => {
+  clearTimeout(displayMatchMessageTimeout);
+  hideMatchMessages();
+  showMatchMessage();
+  displayMatchMessageTimeout = setTimeout(() => {
+    hideMatchMessages();
+  }, 3000);
+};
 
 /**
- * HELPER FUNCTIONS
+ * OTHER HELPER FUNCTIONS
  * Helper functions for game logic
  */
 // Get a random index ranging from 0 (inclusive) to max (exclusive).
@@ -75,6 +106,7 @@ const squareClick = (cardElement, column, row) => {
         && clickedCard.suit === firstCard.suit
     ) {
       console.log('match');
+      handleMatchMessage();
 
       // turn this card over
       cardElement.innerText = clickedCard.name;
