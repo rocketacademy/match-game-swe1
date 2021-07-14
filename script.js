@@ -91,7 +91,7 @@ const squareClick = (cardElement, column, row) => {
         cardElement.innerText = '';
         // set canClick back to true
         canClick = true;
-      }, 1000);
+      }, 3000);
     }
 
     // reset the first card
