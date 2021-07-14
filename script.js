@@ -99,11 +99,11 @@ const handleMatchMessage = (card1, card2, success) => {
 const initTimer = (timerEl) => {
   clearInterval(timerInterval);
 
-  setInterval(() => {
+  timerInterval = setInterval(() => {
     if (timer <= 0) {
-      clearInterval(timerInterval);
       timerEl.innerText = `${username}, time is up!`;
       canClick = false;
+      clearInterval(timerInterval);
     } else {
       timer -= 1;
       setMinutesAndSeconds();
