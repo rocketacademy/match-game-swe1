@@ -13,15 +13,16 @@ let deck;
 // Boolean handler for timeout to prevent subsequent clicks
 // while showing both unmatched cards
 let canClick = true;
-// Time to complete the game
-let timer = 180;
+// Time to complete the game (in seconds)
+const timeToCompleteGame = 180;
+let timer = timeToCompleteGame;
 const secondsInMinute = 60;
 let minutes;
 let seconds;
 // initialize timeout and interval variables
 let displayMatchMessageTimeout;
 let timerInterval;
-// Other timers
+// Other timers (in milliseconds)
 const matchMessageDisplayMs = 3000;
 const flipUnmatchedCardsMs = matchMessageDisplayMs;
 
@@ -94,22 +95,6 @@ const handleMatchMessage = (card1, card2, success) => {
   displayMatchMessageTimeout = setTimeout(() => {
     hideMatchMessages();
   }, matchMessageDisplayMs);
-};
-
-const initTimer = (timerEl) => {
-  clearInterval(timerInterval);
-
-  timerInterval = setInterval(() => {
-    if (timer <= 0) {
-      timerEl.innerText = `${username}, time is up!`;
-      canClick = false;
-      clearInterval(timerInterval);
-    } else {
-      timer -= 1;
-      setMinutesAndSeconds();
-      timerEl.innerText = `${username}, you have ${minutes}:${seconds} remaining for this round!`;
-    }
-  }, 1000);
 };
 
 /*
@@ -324,12 +309,39 @@ const makeDeck = (cardAmount) => {
 ** GAME INITIALISATION LOGIC
 **
 */
+
+const initTimer = (timerEl) => {
+  clearInterval(timerInterval);
+
+  timerInterval = setInterval(() => {
+    if (timer <= 0) {
+      timerEl.innerText = `${username}, time is up! `;
+      canClick = false;
+      const resetGameLink = document.createElement('a');
+      resetGameLink.classList.add('resetGameLink');
+      resetGameLink.href = '#';
+      resetGameLink.innerText = 'Reset Game?';
+      resetGameLink.addEventListener('click', resetGame);
+      timerEl.appendChild(resetGameLink);
+      clearInterval(timerInterval);
+    } else {
+      timer -= 1;
+      setMinutesAndSeconds();
+      timerEl.innerText = `${username}, you have ${minutes}:${seconds} remaining for this round!`;
+    }
+  }, 1000);
+};
+
 const initGame = () => {
   // remove name and buttons and feedback from username setting state
   const nameInput = document.querySelector('.nameInput');
-  nameInput.remove();
+  if (nameInput) {
+    nameInput.remove();
+  }
   const nameButton = document.querySelector('.nameButton');
-  nameButton.remove();
+  if (nameButton) {
+    nameButton.remove();
+  }
   const nameFeedback = document.querySelector('.nameFeedback');
   if (nameFeedback) {
     nameFeedback.remove();
@@ -358,6 +370,25 @@ const initGame = () => {
   timerParagraph.innerText = `${username}, you have ${minutes}:${seconds} remaining for this round!`;
   document.body.insertBefore(timerParagraph, boardEl);
   initTimer(timerParagraph);
+};
+
+const resetGame = (event) => {
+  event.preventDefault();
+  // reset canClick
+  canClick = true;
+  // reset timer
+  timer = timeToCompleteGame;
+  setMinutesAndSeconds();
+  // empty GAMEBOARD
+  GAMEBOARD.splice(0, GAMEBOARD.length);
+  // remove all elements on the page
+  const allPara = document.querySelectorAll('p');
+  for (let i = 0; i < allPara.length; i += 1) {
+    allPara[i].remove();
+  }
+  const currentBoard = document.querySelector('.board');
+  currentBoard.remove();
+  initGame();
 };
 
 const initUserState = () => {
