@@ -375,10 +375,13 @@ const initUserState = () => {
       username = nameInput.value.trim();
       initGame();
     } else {
-      const nameFeedback = document.createElement('p');
-      nameFeedback.classList.add('nameFeedback');
-      nameFeedback.innerText = 'Please enter a valid name!';
-      document.body.appendChild(nameFeedback);
+      const prevNameFeedback = document.querySelector('.nameFeedback');
+      if (!prevNameFeedback) {
+        const nameFeedback = document.createElement('p');
+        nameFeedback.classList.add('nameFeedback');
+        nameFeedback.innerText = 'Please enter a valid name!';
+        document.body.appendChild(nameFeedback);
+      }
     }
   });
   document.body.appendChild(button);
