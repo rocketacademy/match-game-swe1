@@ -14,9 +14,49 @@ let deck;
 let canClick = true;
 // Time to complete the game
 let timer = 180;
+const secondsInMinute = 60;
+let minutes;
+let seconds;
 // initialize timeout and interval variables
 let displayMatchMessageTimeout;
 let timerInterval;
+
+/**
+ * HELPER FUNCTIONS
+ * Helper functions for game logic
+ */
+// Get a random index ranging from 0 (inclusive) to max (exclusive).
+const getRandomIndex = (max) => Math.floor(Math.random() * max);
+
+// Shuffle an array of cards
+const shuffleCards = (cards) => {
+  // Loop over the card deck array once
+  for (let currentIndex = 0; currentIndex < cards.length; currentIndex += 1) {
+    // Select a random index in the deck
+    const randomIndex = getRandomIndex(cards.length);
+    // Select the card that corresponds to randomIndex
+    const randomCard = cards[randomIndex];
+    // Select the card that corresponds to currentIndex
+    const currentCard = cards[currentIndex];
+    // Swap positions of randomCard and currentCard in the deck
+    cards[currentIndex] = randomCard;
+    cards[randomIndex] = currentCard;
+  }
+  // Return the shuffled deck
+  return cards;
+};
+
+// set minutes and seconds in mm:ss format
+const setMinutesAndSeconds = () => {
+  minutes = Math.floor(timer / secondsInMinute);
+  if (minutes.toString().length < 2) {
+    minutes = `0${minutes}`;
+  }
+  seconds = timer % secondsInMinute;
+  if (seconds.toString().length < 2) {
+    seconds = `0${seconds}`;
+  }
+};
 
 /*
 ** NAMED TIMEOUT FUNCTIONS AND HELPERS
@@ -57,34 +97,10 @@ const initTimer = (timerEl) => {
       canClick = false;
     } else {
       timer -= 1;
-      timerEl.innerText = `${timer} seconds remaining!`;
+      setMinutesAndSeconds();
+      timerEl.innerText = `${minutes}:${seconds} remaining!`;
     }
   }, 1000);
-};
-
-/**
- * OTHER HELPER FUNCTIONS
- * Helper functions for game logic
- */
-// Get a random index ranging from 0 (inclusive) to max (exclusive).
-const getRandomIndex = (max) => Math.floor(Math.random() * max);
-
-// Shuffle an array of cards
-const shuffleCards = (cards) => {
-  // Loop over the card deck array once
-  for (let currentIndex = 0; currentIndex < cards.length; currentIndex += 1) {
-    // Select a random index in the deck
-    const randomIndex = getRandomIndex(cards.length);
-    // Select the card that corresponds to randomIndex
-    const randomCard = cards[randomIndex];
-    // Select the card that corresponds to currentIndex
-    const currentCard = cards[currentIndex];
-    // Swap positions of randomCard and currentCard in the deck
-    cards[currentIndex] = randomCard;
-    cards[randomIndex] = currentCard;
-  }
-  // Return the shuffled deck
-  return cards;
 };
 
 /*
@@ -269,7 +285,8 @@ const initGame = () => {
   document.body.appendChild(boardEl);
 
   const timerParagraph = document.createElement('p');
-  timerParagraph.innerText = `${timer} seconds remaining!`;
+  setMinutesAndSeconds();
+  timerParagraph.innerText = `${minutes}:${seconds} remaining!`;
   document.body.insertBefore(timerParagraph, boardEl);
   initTimer(timerParagraph);
 };
