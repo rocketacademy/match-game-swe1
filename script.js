@@ -77,8 +77,13 @@ const squareClick = (cardElement, column, row) => {
     } else {
       console.log('NOT a match');
 
-      // turn this card back over
-      firstCardElement.innerText = '';
+      cardElement.innerText = clickedCard.name;
+
+      setTimeout(() => {
+        // turn both cards back over
+        firstCardElement.innerText = '';
+        cardElement.innerText = '';
+      }, 1000);
     }
 
     // reset the first card
