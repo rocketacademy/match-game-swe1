@@ -194,7 +194,9 @@ const squareClick = (cardElement, column, row) => {
         firstCardElement.innerHTML = '';
         cardElement.innerHTML = '';
         // set canClick back to true
-        canClick = true;
+        if (timer > 0) {
+          canClick = true;
+        }
       }, flipUnmatchedCardsMs);
     }
 
