@@ -101,6 +101,16 @@ const handleMatchMessage = (card1, card2, success) => {
 ** GAMEPLAY LOGIC
 **
 */
+const addResetGameLink = (el) => {
+  const resetGameLink = document.createElement('a');
+  resetGameLink.classList.add('resetGameLink');
+  resetGameLink.href = '#';
+  resetGameLink.innerText = 'Reset Game?';
+  // eslint-disable-next-line no-use-before-define
+  resetGameLink.addEventListener('click', resetGame);
+  el.appendChild(resetGameLink);
+};
+
 const squareClick = (cardElement, column, row) => {
   console.log(cardElement);
 
@@ -150,6 +160,19 @@ const squareClick = (cardElement, column, row) => {
       cardElement.innerHTML = `<div>${clickedCard.displayName}</div><div>${clickedCard.suitSymbol}</div>`;
       if (clickedCard.suit === 'diamonds' || clickedCard.suit === 'hearts') {
         cardElement.innerHTML = `<div class="red">${clickedCard.displayName}</div><div class="red">${clickedCard.suitSymbol}</div>`;
+      }
+
+      // remove 'unmatched' classname from cards
+      firstCardElement.classList.remove('unmatched');
+      cardElement.classList.remove('unmatched');
+
+      // win condition met if no unmatched cards left
+      if (document.querySelectorAll('.unmatched').length === 0) {
+        clearInterval(timerInterval);
+        const timerParagraph = document.querySelector('.timerParagraph');
+        timerParagraph.innerText = `${username}, you have matched all of the cards! You have won the round! `;
+        canClick = false;
+        addResetGameLink(timerParagraph);
       }
     } else {
       console.log('NOT a match');
@@ -206,6 +229,8 @@ const buildBoardElements = (board) => {
 
       // set a class for CSS purposes
       square.classList.add('square');
+      // CX: also set a class 'unmatched' for win condition checking
+      square.classList.add('unmatched');
 
       // set the click event
       // eslint-disable-next-line
@@ -317,12 +342,7 @@ const initTimer = (timerEl) => {
     if (timer <= 0) {
       timerEl.innerText = `${username}, time is up! `;
       canClick = false;
-      const resetGameLink = document.createElement('a');
-      resetGameLink.classList.add('resetGameLink');
-      resetGameLink.href = '#';
-      resetGameLink.innerText = 'Reset Game?';
-      resetGameLink.addEventListener('click', resetGame);
-      timerEl.appendChild(resetGameLink);
+      addResetGameLink(timerEl);
       clearInterval(timerInterval);
     } else {
       timer -= 1;
@@ -366,6 +386,7 @@ const initGame = () => {
   document.body.appendChild(boardEl);
 
   const timerParagraph = document.createElement('p');
+  timerParagraph.classList.add('timerParagraph');
   setMinutesAndSeconds();
   timerParagraph.innerText = `${username}, you have ${minutes}:${seconds} remaining for this round!`;
   document.body.insertBefore(timerParagraph, boardEl);
