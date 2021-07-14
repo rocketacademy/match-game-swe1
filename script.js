@@ -20,6 +20,9 @@ let seconds;
 // initialize timeout and interval variables
 let displayMatchMessageTimeout;
 let timerInterval;
+// Other timers
+const matchMessageDisplayMs = 3000;
+const flipUnmatchedCardsMs = matchMessageDisplayMs;
 
 /**
  * HELPER FUNCTIONS
@@ -71,20 +74,25 @@ const hideMatchMessages = () => {
   }
 };
 
-const showMatchMessage = (card) => {
+const showMatchMessage = (card1, card2, success) => {
   const matchMessageParagraph = document.createElement('p');
   matchMessageParagraph.className += 'matchMessage match-message';
-  matchMessageParagraph.innerText = `You have matched a pair of ${card.name} of ${card.suit}!`;
+  if (success) {
+    matchMessageParagraph.innerText = `You have matched a pair of ${card1.name} of ${card1.suit}!`;
+  } else {
+    matchMessageParagraph.innerText = `You have opened a ${card1.name} of ${card1.suit}, and a ${card2.name} of ${card2.suit}. It's not a match! Please wait ${flipUnmatchedCardsMs / 1000} seconds for the unmatched cards to close before opening new cards.`;
+  }
+
   document.body.appendChild(matchMessageParagraph);
 };
 
-const handleMatchMessage = (card) => {
+const handleMatchMessage = (card1, card2, success) => {
   clearTimeout(displayMatchMessageTimeout);
   hideMatchMessages();
-  showMatchMessage(card);
+  showMatchMessage(card1, card2, success);
   displayMatchMessageTimeout = setTimeout(() => {
     hideMatchMessages();
-  }, 3000);
+  }, matchMessageDisplayMs);
 };
 
 const initTimer = (timerEl) => {
@@ -135,15 +143,22 @@ const squareClick = (cardElement, column, row) => {
     // hold onto this for later when it may not match
     firstCardElement = cardElement;
 
+    const nextClickHintParagraph = document.createElement('p');
+    nextClickHintParagraph.classList.add('nextClickHintParagraph');
+    nextClickHintParagraph.innerText = 'Please click on another card to see if it matches!';
+    document.body.appendChild(nextClickHintParagraph);
+
     // second turn
   } else {
     console.log('second turn');
+    const nextClickHintParagraph = document.querySelector('.nextClickHintParagraph');
+    nextClickHintParagraph.remove();
     if (
       clickedCard.name === firstCard.name
         && clickedCard.suit === firstCard.suit
     ) {
       console.log('match');
-      handleMatchMessage(clickedCard);
+      handleMatchMessage(firstCard, clickedCard, true);
 
       // turn this card over
       cardElement.innerHTML = `<div>${clickedCard.displayName}</div><div>${clickedCard.suitSymbol}</div>`;
@@ -160,13 +175,15 @@ const squareClick = (cardElement, column, row) => {
         cardElement.innerHTML = `<div class="red">${clickedCard.displayName}</div><div class="red">${clickedCard.suitSymbol}</div>`;
       }
 
+      handleMatchMessage(firstCard, clickedCard, false);
+
       setTimeout(() => {
         // turn both cards back over
         firstCardElement.innerHTML = '';
         cardElement.innerHTML = '';
         // set canClick back to true
         canClick = true;
-      }, 3000);
+      }, flipUnmatchedCardsMs);
     }
 
     // reset the first card
