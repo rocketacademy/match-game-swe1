@@ -25,6 +25,8 @@ let timerInterval;
 // Other timers (in milliseconds)
 const matchMessageDisplayMs = 3000;
 const flipUnmatchedCardsMs = matchMessageDisplayMs;
+// Number of wins
+let wins = 0;
 
 /**
  * HELPER FUNCTIONS
@@ -169,8 +171,9 @@ const squareClick = (cardElement, column, row) => {
       // win condition met if no unmatched cards left
       if (document.querySelectorAll('.unmatched').length === 0) {
         clearInterval(timerInterval);
+        wins += 1;
         const timerParagraph = document.querySelector('.timerParagraph');
-        timerParagraph.innerText = `${username}, you have matched all of the cards! You have won the round! `;
+        timerParagraph.innerText = `${username}, you have matched all of the cards! You have won the round! You have now won ${wins} round(s). `;
         canClick = false;
         addResetGameLink(timerParagraph);
       }
@@ -347,7 +350,7 @@ const initTimer = (timerEl) => {
     } else {
       timer -= 1;
       setMinutesAndSeconds();
-      timerEl.innerText = `${username}, you have ${minutes}:${seconds} remaining for this round!`;
+      timerEl.innerHTML = `${username}, you have won ${wins} round(s) so far.<br/>You have ${minutes}:${seconds} remaining for this round!`;
     }
   }, 1000);
 };
@@ -388,7 +391,7 @@ const initGame = () => {
   const timerParagraph = document.createElement('p');
   timerParagraph.classList.add('timerParagraph');
   setMinutesAndSeconds();
-  timerParagraph.innerText = `${username}, you have ${minutes}:${seconds} remaining for this round!`;
+  timerParagraph.innerHTML = `${username}, you have won ${wins} round(s) so far.<br/>You have ${minutes}:${seconds} remaining for this round!`;
   document.body.insertBefore(timerParagraph, boardEl);
   initTimer(timerParagraph);
 };
