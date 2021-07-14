@@ -6,6 +6,7 @@
 // boardSize has to be an even number
 const boardSize = 4;
 const GAMEBOARD = [];
+let username = '';
 let firstCard = null;
 let firstCardElement;
 let deck;
@@ -78,9 +79,9 @@ const showMatchMessage = (card1, card2, success) => {
   const matchMessageParagraph = document.createElement('p');
   matchMessageParagraph.className += 'matchMessage match-message';
   if (success) {
-    matchMessageParagraph.innerText = `You have matched a pair of ${card1.name} of ${card1.suit}!`;
+    matchMessageParagraph.innerText = `${username}, you have matched a pair of ${card1.name} of ${card1.suit}!`;
   } else {
-    matchMessageParagraph.innerText = `You have opened a ${card1.name} of ${card1.suit}, and a ${card2.name} of ${card2.suit}. It's not a match! Please wait ${flipUnmatchedCardsMs / 1000} seconds for the unmatched cards to close before opening new cards.`;
+    matchMessageParagraph.innerText = `${username}, you have opened a ${card1.name} of ${card1.suit}, and a ${card2.name} of ${card2.suit}. It's not a match! Please wait ${flipUnmatchedCardsMs / 1000} seconds for the unmatched cards to close before opening new cards.`;
   }
 
   document.body.appendChild(matchMessageParagraph);
@@ -101,12 +102,12 @@ const initTimer = (timerEl) => {
   setInterval(() => {
     if (timer <= 0) {
       clearInterval(timerInterval);
-      timerEl.innerText = 'Time is up!';
+      timerEl.innerText = `${username}, time is up!`;
       canClick = false;
     } else {
       timer -= 1;
       setMinutesAndSeconds();
-      timerEl.innerText = `${minutes}:${seconds} remaining!`;
+      timerEl.innerText = `${username}, you have ${minutes}:${seconds} remaining for this round!`;
     }
   }, 1000);
 };
@@ -324,6 +325,16 @@ const makeDeck = (cardAmount) => {
 **
 */
 const initGame = () => {
+  // remove name and buttons and feedback from username setting state
+  const nameInput = document.querySelector('.nameInput');
+  nameInput.remove();
+  const nameButton = document.querySelector('.nameButton');
+  nameButton.remove();
+  const nameFeedback = document.querySelector('.nameFeedback');
+  if (nameFeedback) {
+    nameFeedback.remove();
+  }
+
   // create this special deck by getting the doubled cards and
   // making a smaller array that is ( boardSize squared ) number of cards
   const doubleDeck = makeDeck();
@@ -344,9 +355,33 @@ const initGame = () => {
 
   const timerParagraph = document.createElement('p');
   setMinutesAndSeconds();
-  timerParagraph.innerText = `${minutes}:${seconds} remaining!`;
+  timerParagraph.innerText = `${username}, you have ${minutes}:${seconds} remaining for this round!`;
   document.body.insertBefore(timerParagraph, boardEl);
   initTimer(timerParagraph);
 };
 
-initGame();
+const initUserState = () => {
+  const input = document.createElement('input');
+  input.classList.add('nameInput');
+  input.placeholder = 'Please enter a name';
+  document.body.appendChild(input);
+
+  const button = document.createElement('button');
+  button.classList.add('nameButton');
+  button.innerText = 'Submit';
+  button.addEventListener('click', () => {
+    const nameInput = document.querySelector('.nameInput');
+    if (nameInput.value.trim() !== '') {
+      username = nameInput.value.trim();
+      initGame();
+    } else {
+      const nameFeedback = document.createElement('p');
+      nameFeedback.classList.add('nameFeedback');
+      nameFeedback.innerText = 'Please enter a valid name!';
+      document.body.appendChild(nameFeedback);
+    }
+  });
+  document.body.appendChild(button);
+};
+
+initUserState();
