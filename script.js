@@ -28,17 +28,17 @@ const hideMatchMessages = () => {
   }
 };
 
-const showMatchMessage = () => {
+const showMatchMessage = (card) => {
   const matchMessageParagraph = document.createElement('p');
   matchMessageParagraph.className += 'matchMessage match-message';
-  matchMessageParagraph.innerText = 'Matched cards!';
+  matchMessageParagraph.innerText = `You have matched a pair of ${card.name} of ${card.suit}!`;
   document.body.appendChild(matchMessageParagraph);
 };
 
-const handleMatchMessage = () => {
+const handleMatchMessage = (card) => {
   clearTimeout(displayMatchMessageTimeout);
   hideMatchMessages();
-  showMatchMessage();
+  showMatchMessage(card);
   displayMatchMessageTimeout = setTimeout(() => {
     hideMatchMessages();
   }, 3000);
@@ -106,7 +106,7 @@ const squareClick = (cardElement, column, row) => {
         && clickedCard.suit === firstCard.suit
     ) {
       console.log('match');
-      handleMatchMessage();
+      handleMatchMessage(clickedCard);
 
       // turn this card over
       cardElement.innerText = clickedCard.name;
