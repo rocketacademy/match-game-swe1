@@ -3,11 +3,16 @@ body {
 }
 
 .square {
-  padding: 20px;
+  padding: 30px;
   margin: 10px;
   background-color: white;
   display: inline-block;
-  height: 20px;
-  width: 20px;
+  height: 30px;
+  width: 30px;
   vertical-align: top;
+}
+
+.red {
+  /* CX: Change colour to color */
+  color: red;
 }

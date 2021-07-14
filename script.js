@@ -118,7 +118,7 @@ const squareClick = (cardElement, column, row) => {
 
   // the user already clicked on this square
   // or canClick is false (timeout for closing cards not up)
-  if (cardElement.innerText !== '' || !canClick) {
+  if (cardElement.innerHTML !== '' || !canClick) {
     return;
   }
 
@@ -127,7 +127,10 @@ const squareClick = (cardElement, column, row) => {
     console.log('first turn');
     firstCard = clickedCard;
     // turn this card over
-    cardElement.innerText = firstCard.name;
+    cardElement.innerHTML = `<div>${firstCard.displayName}</div><div>${firstCard.suitSymbol}</div>`;
+    if (firstCard.suit === 'hearts' || firstCard.suit === 'diamonds') {
+      cardElement.innerHTML = `<div class="red">${firstCard.displayName}</div><div class="red">${firstCard.suitSymbol}</div>`;
+    }
 
     // hold onto this for later when it may not match
     firstCardElement = cardElement;
@@ -143,18 +146,24 @@ const squareClick = (cardElement, column, row) => {
       handleMatchMessage(clickedCard);
 
       // turn this card over
-      cardElement.innerText = clickedCard.name;
+      cardElement.innerHTML = `<div>${clickedCard.displayName}</div><div>${clickedCard.suitSymbol}</div>`;
+      if (clickedCard.suit === 'diamonds' || clickedCard.suit === 'hearts') {
+        cardElement.innerHTML = `<div class="red">${clickedCard.displayName}</div><div class="red">${clickedCard.suitSymbol}</div>`;
+      }
     } else {
       console.log('NOT a match');
       // prevent user from clicking additional cards
       // while both unmatched cards are showing
       canClick = false;
-      cardElement.innerText = clickedCard.name;
+      cardElement.innerHTML = `<div>${clickedCard.displayName}</div><div>${clickedCard.suitSymbol}</div>`;
+      if (clickedCard.suit === 'diamonds' || clickedCard.suit === 'hearts') {
+        cardElement.innerHTML = `<div class="red">${clickedCard.displayName}</div><div class="red">${clickedCard.suitSymbol}</div>`;
+      }
 
       setTimeout(() => {
         // turn both cards back over
-        firstCardElement.innerText = '';
-        cardElement.innerText = '';
+        firstCardElement.innerHTML = '';
+        cardElement.innerHTML = '';
         // set canClick back to true
         canClick = true;
       }, 3000);
@@ -225,22 +234,51 @@ const makeDeck = (cardAmount) => {
     // make a variable of the current suit
     const currentSuit = suits[suitIndex];
     console.log(`current suit: ${currentSuit}`);
+    // CX: Setting of suit symbol as well as card colors
+    let suitSymbol = '';
+    let colour = '';
+
+    switch (currentSuit) {
+      case 'hearts':
+        suitSymbol = '♥';
+        colour = 'red';
+        break;
+      case 'diamonds':
+        suitSymbol = '♦️';
+        colour = 'red';
+        break;
+      case 'clubs':
+        suitSymbol = '♣';
+        colour = 'black';
+        break;
+      case 'spades':
+      default:
+        suitSymbol = '♠';
+        colour = 'black';
+        break;
+    }
 
     // loop to create all cards in this suit
     // rank 1-13
     for (let rankCounter = 1; rankCounter <= 13; rankCounter += 1) {
       // Convert rankCounter to string
       let cardName = `${rankCounter}`;
+      // CX: Setting of display name
+      let displayName = cardName;
 
       // 1, 11, 12 ,13
       if (cardName === '1') {
         cardName = 'ace';
+        displayName = 'A';
       } else if (cardName === '11') {
         cardName = 'jack';
+        displayName = 'J';
       } else if (cardName === '12') {
         cardName = 'queen';
+        displayName = 'Q';
       } else if (cardName === '13') {
         cardName = 'king';
+        displayName = 'K';
       }
 
       // make a single card object variable
@@ -248,6 +286,9 @@ const makeDeck = (cardAmount) => {
         name: cardName,
         suit: currentSuit,
         rank: rankCounter,
+        suitSymbol,
+        displayName,
+        colour,
       };
 
       console.log(`rank: ${rankCounter}`);
